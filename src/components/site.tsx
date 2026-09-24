@@ -299,17 +299,17 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
             className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.06]"
           />
           {/* City badge — colour auto-set by top-region luminance */}
-          <span className={`absolute left-4 top-4 ${topBg} backdrop-blur-md rounded-full px-4 py-1.5 font-mono text-[11px] font-bold uppercase tracking-widest ${topText}`}>
+          <span className={`absolute left-3 top-3 md:left-4 md:top-4 ${topBg} backdrop-blur-md rounded-full px-3 py-1 md:px-4 md:py-1.5 font-mono text-[9px] md:text-[11px] font-bold uppercase tracking-widest ${topText}`}>
             {project.city}
           </span>
           {/* Save */}
           <button
             onClick={toggleSave}
             aria-label={saved ? 'Remove from saved' : 'Save project'}
-            className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-[#f5f2e9]/20 text-white backdrop-blur-sm transition hover:bg-[#f5f2e9]/40"
+            className="absolute right-3 top-3 md:right-4 md:top-4 z-10 grid h-8 w-8 md:h-10 md:w-10 place-items-center rounded-full bg-[#f5f2e9]/20 text-white backdrop-blur-sm transition hover:bg-[#f5f2e9]/40"
             data-testid={`button-save-${project.slug}`}
           >
-            <Heart size={16} fill={saved ? '#947e82' : 'none'} className={saved ? 'text-[#947e82]' : ''} />
+            <Heart size={16} fill={saved ? '#947e82' : 'none'} className={`w-3.5 h-3.5 md:w-4 md:h-4 ${saved ? 'text-[#947e82]' : ''}`} />
           </button>
           {/* Adaptive gradient — always toward the bottom text, using the image's own tone */}
           <div className={`absolute inset-x-0 bottom-0 h-3/5 ${
@@ -318,9 +318,9 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
               : 'bg-gradient-to-t from-[#f5f2e9]/90 to-transparent'
           }`} />
           {/* Bottom text — colour auto-set by bottom-region luminance */}
-          <div className={`absolute bottom-0 inset-x-0 p-6 ${bottomText}`}>
-            <p className="text-sm font-semibold line-clamp-1 opacity-90 drop-shadow-md">{project.location}</p>
-            <h3 className="mt-2 font-display text-4xl leading-tight drop-shadow-lg">{project.name}</h3>
+          <div className={`absolute bottom-0 inset-x-0 p-5 md:p-6 ${bottomText}`}>
+            <p className="text-xs md:text-sm font-semibold line-clamp-1 opacity-90 drop-shadow-md">{project.location}</p>
+            <h3 className="mt-1 md:mt-2 font-display text-3xl md:text-4xl leading-tight drop-shadow-lg">{project.name}</h3>
           </div>
           {/* Hover reveal panel */}
           <div className="project-card-reveal absolute bottom-0 inset-x-0 bg-[#421319] px-5 py-4">
@@ -345,11 +345,11 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
         </div>
       </Link>
       {/* Footer strip */}
-      <div className="flex items-center justify-between border-t border-[#947e82]/50 bg-[#f5f2e9] px-5 py-4">
-        <span className="font-mono text-[11px] font-bold uppercase tracking-[.2em] text-[#947e82] truncate max-w-[200px]">{project.product.split('(')[0]}</span>
+      <div className="flex items-center justify-between border-t border-[#947e82]/50 bg-[#f5f2e9] px-4 py-3 md:px-5 md:py-4">
+        <span className="font-mono text-[9px] md:text-[11px] font-bold uppercase tracking-[.2em] text-[#947e82] truncate max-w-[140px] md:max-w-[200px]">{project.product.split('(')[0]}</span>
         <div className="flex gap-2">
-          <a href={CONTACT.tel} aria-label="Call" className="grid h-9 w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><Phone size={14} /></a>
-          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-9 w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><MessageCircle size={14} /></a>
+          <a href={CONTACT.tel} aria-label="Call" className="grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><Phone size={14} className="w-3 md:w-3.5" /></a>
+          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><MessageCircle size={14} className="w-3 md:w-3.5" /></a>
         </div>
       </div>
     </article>

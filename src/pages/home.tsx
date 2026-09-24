@@ -64,7 +64,7 @@ export default function Home() {
               <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
                 Homes worth coming home to
               </p>
-              <h1 className="text-[clamp(4rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f5f2e9]">
+              <h1 className="text-[clamp(3.2rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f5f2e9]">
                 <span className="font-sans font-semibold">A clearer path</span><br />
                 <span className="font-display italic text-[#947e82]">to </span>
                 <span className="font-mono">your place.</span>
@@ -205,7 +205,7 @@ export default function Home() {
 
             {/* Logo wall */}
             <FadeIn delay={0.15}>
-              <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 md:grid-cols-6 lg:grid-cols-8">
                 {[
                   { src: '/logos/amazon.png', alt: 'Amazon Hills', desc: "The meeting point of two ambitious visions: Capital Hills' local insight and Amazon Developments' global excellence. Through this collaboration, we deliver high-rise mixed-use destinations defined by precision, smart engineering, and modern architecture — setting new benchmarks for real estate in Egypt's New Administrative Capital and beyond." },
                   { src: '/logos/e_and_egypt.png', alt: 'Etisalat and (e&)', desc: 'A leading regional provider of communications and digital services, partnering with us to redefine the concept of gated communities in Egypt. Through this collaboration, we integrate advanced infrastructure, smart services, and cutting-edge technology into our projects, delivering a new benchmark for connected, intelligent living.' },
@@ -294,21 +294,21 @@ export default function Home() {
               {/* Decorative accent */}
               <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-[#250f12]/40 to-transparent pointer-events-none" />
               
-              <div className="relative p-8 md:p-12">
+              <div className="relative p-6 md:p-12">
                 <button
                   onClick={() => setSelectedPartner(null)}
-                  className="absolute right-6 top-6 rounded-full p-2 text-[#f5f2e9]/50 transition hover:bg-[#250f12]/50 hover:text-[#f5f2e9]"
+                  className="absolute right-4 top-4 md:right-6 md:top-6 rounded-full p-2 text-[#f5f2e9]/50 transition hover:bg-[#250f12]/50 hover:text-[#f5f2e9]"
                 >
                   <X size={20} />
                 </button>
                 
-                <p className="font-mono text-[10px] uppercase tracking-widest text-[#947e82] mb-10">
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#947e82] mb-8 md:mb-10">
                   Partnership Profile
                 </p>
                 
-                <div className="grid gap-10 md:grid-cols-[1.2fr_2fr] md:items-center">
+                <div className="grid gap-8 md:gap-10 md:grid-cols-[1.2fr_2fr] md:items-center">
                   {/* Left: Huge Logo */}
-                  <div className="flex h-32 md:h-40 items-center justify-start border-b border-[#f5f2e9]/10 pb-8 md:border-b-0 md:border-r md:pb-0 md:pr-8">
+                  <div className="flex h-20 md:h-40 items-center justify-start border-b border-[#f5f2e9]/10 pb-6 md:border-b-0 md:border-r md:pb-0 md:pr-8">
                     <img
                       src={selectedPartner.src}
                       alt={selectedPartner.alt}
@@ -318,8 +318,8 @@ export default function Home() {
                   
                   {/* Right: Content */}
                   <div>
-                    <h3 className="mb-4 font-display text-3xl md:text-4xl text-[#f5f2e9]">{selectedPartner.alt}</h3>
-                    <p className="text-sm md:text-base leading-relaxed text-[#f5f2e9]/70">{selectedPartner.desc}</p>
+                    <h3 className="mb-3 md:mb-4 font-display text-2xl md:text-4xl text-[#f5f2e9]">{selectedPartner.alt}</h3>
+                    <p className="text-xs md:text-base leading-relaxed text-[#f5f2e9]/70">{selectedPartner.desc}</p>
                   </div>
                 </div>
               </div>
