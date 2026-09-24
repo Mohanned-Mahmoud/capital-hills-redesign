@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { type Project } from '@/data/projects';
 import { FadeIn } from '@/components/animations';
+import { useData } from '@/context/DataContext';
 
 export const CONTACT = {
   phone: '16794',
@@ -170,7 +171,7 @@ export function Header() {
             }`}
             data-testid="link-header-call"
           >
-            <Phone size={13} /> Talk to us
+            <Phone size={13} /> {content['global_header_talk'] || 'Talk to us'}
           </a>
           <button
             onClick={() => setOpen(!open)}
@@ -215,13 +216,14 @@ export function Header() {
 }
 
 export function Footer() {
+  const { content } = useData();
   return (
     <footer className="bg-[#421319] pb-24 pt-16 text-[#f5f2e9] md:pb-12">
       <div className="container-shell grid gap-12 md:grid-cols-[1.4fr_.8fr_.8fr_1.2fr]">
         <div>
           <Logo light variant="full" className="h-10 md:h-12 w-auto object-contain" />
           <p className="mt-5 max-w-xs text-sm leading-6 text-[#947e82]">
-            Homes with sound thinking behind them. For the way Egyptians actually live.
+            {content['global_footer_desc'] || 'Homes with sound thinking behind them. For the way Egyptians actually live.'}
           </p>
           <div className="mt-6 flex gap-3">
             <a href="https://instagram.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#250f12] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-instagram">
@@ -233,7 +235,7 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Explore</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_explore'] || 'Explore'}</p>
           <div className="space-y-3 text-sm text-[#947e82]">
             <Link href="/projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">Our projects</Link>
             <Link href="/why-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">Why Capital Hills</Link>
@@ -241,23 +243,23 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Visit</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_visit'] || 'Visit'}</p>
           <div className="space-y-4 text-sm leading-5 text-[#947e82]">
             <div><strong className="font-bold text-[#f5f2e9]">HQ</strong><br />Galleria 40, Zayed<br />Downtown, New Cairo</div>
             <div><strong className="font-bold text-[#f5f2e9]">Sales & Customer Service</strong><br />Arkan Plaza, Zayed</div>
           </div>
         </div>
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Need a second opinion?</p>
-          <p className="text-sm leading-6 text-[#947e82]">Tell us what you are looking for. A real person will call with a clear answer.</p>
+          <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_need'] || 'Need a second opinion?'}</p>
+          <p className="text-sm leading-6 text-[#947e82]">{content['global_footer_need_desc'] || 'Tell us what you are looking for. A real person will call with a clear answer.'}</p>
           <a href={CONTACT.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f5f2e9] px-5 py-3 text-sm font-bold text-[#231f20] transition-colors hover:bg-white" data-testid="link-footer-phone">
             <Phone size={14} /> <PhoneNumber />
           </a>
         </div>
       </div>
       <div className="container-shell mt-16 flex flex-col items-center justify-between border-t border-[#493337] pt-6 text-xs text-[#947e82] md:flex-row">
-        <p>© 2026 Capital Hills Developments</p>
-        <p className="mt-2 md:mt-0">Built for better decisions.</p>
+        <p>{content['global_footer_copy'] || '© 2026 Capital Hills Developments'}</p>
+        <p className="mt-2 md:mt-0">{content['global_footer_slogan'] || 'Built for better decisions.'}</p>
       </div>
     </footer>
   );
