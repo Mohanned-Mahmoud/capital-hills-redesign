@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import multer from 'multer';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { db } from './db';
 import { contentBlocks, projects } from './db/schema';
 import { eq } from 'drizzle-orm';
@@ -29,28 +29,31 @@ const PUBLIC_URL = process.env.CLOUDFLARE_R2_PUBLIC_URL!;
 
 // --- API ROUTES ---
 
-// 1. Pre-signed URL for uploading images
-app.post('/api/upload-url', async (req, res) => {
+// 1. Upload images securely via backend to bypass R2 CORS
+const upload = multer({ storage: multer.memoryStorage() });
+
+app.post('/api/upload', upload.single('file'), async (req, res) => {
   try {
-    const { filename, contentType } = req.body;
-    if (!filename) return res.status(400).json({ error: 'Filename is required' });
+    const file = req.file;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
 
     // Sanitize filename and add timestamp to avoid collisions
-    const safeFilename = `${Date.now()}-${filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const safeFilename = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
     
     const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: safeFilename,
-      ContentType: contentType,
+      ContentType: file.mimetype,
+      Body: file.buffer,
     });
 
-    const signedUrl = await getSignedUrl(S3, command, { expiresIn: 3600 });
+    await S3.send(command);
     const publicUrl = `${PUBLIC_URL}/${safeFilename}`;
 
-    res.json({ uploadUrl: signedUrl, publicUrl });
+    res.json({ publicUrl });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Failed to generate upload URL' });
+    console.error('Upload Error:', error);
+    res.status(500).json({ error: 'Failed to upload file' });
   }
 });
 

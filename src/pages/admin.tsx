@@ -18,6 +18,7 @@ export default function Admin() {
   // For projects
   const [editingProject, setEditingProject] = useState<any | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -49,6 +50,31 @@ export default function Admin() {
       fetchData();
     } catch (e) {
       alert('Error saving');
+    }
+  };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploadingImage(true);
+    try {
+      const file = files[0];
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await fetch(`${API_URL}/upload`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!res.ok) throw new Error('Upload failed');
+      const { publicUrl } = await res.json();
+      setUploadedUrl(publicUrl);
+    } catch (error) {
+      alert('Upload failed');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
