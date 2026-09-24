@@ -1,33 +1,11 @@
 const fs = require('fs');
+let c = fs.readFileSync('src/components/site.tsx', 'utf8');
 
-let code = fs.readFileSync('src/pages/home.tsx', 'utf8');
-
-// 1. Home signature
-code = code.replace(
-  /export default function Home\(\) \{\s*const \[review, setReview\] = useState\(0\);/,
-  `export default function Home() {
-  const { content, projects } = useData();
-  const tickerItems = projects.flatMap((p) => [\`\${p.name} — \${p.city}\`, '·']);
-  const [review, setReview] = useState(0);`
-);
-
-// 2. Hero Title
-code = code.replace(
-  /<span className="font-sans font-semibold">A clearer path<\/span>/,
-  `<span className="font-sans font-semibold">{content['hero_title'] || 'A clearer path'}</span>`
-);
-
-// 3. Hero Subtitle
-code = code.replace(
-  /Thoughtfully planned communities\. <span className="font-display italic text-lg text-\[\#f5f2e9\]">A better tomorrow\.<\/span>/,
-  `{content['hero_subtitle'] || 'Thoughtfully planned communities. A better tomorrow.'}`
-);
-
-// 4. Chairman Quote
-code = code.replace(
-  /Trust is more than a promise\.<br \/>\s*<span className="italic text-\[\#947e82\]">It is the foundation of everything we build\.<\/span>/,
-  `{content['chairman_quote'] || 'Trust is more than a promise. It is the foundation of everything we build.'}`
-);
-
-fs.writeFileSync('src/pages/home.tsx', code);
-console.log('Fixed home.tsx');
+c = c.replace(/export function Header\(\) \{/, 'export function Header() {\n  const { content } = useData();');
+c = c.replace(/join\('\\n  const \{ content \} = useData\(\);\\n  const \{ content \} = useData\(\);\\n'\)/g, "join('\\n')");
+// Let's just be extremely safe and check if it already has useData() in Header
+if (!c.includes('export function Header() {\n  const { content } = useData();')) {
+    c = c.replace('export function Header() {\r\n  const [open, setOpen] = useState(false);', 'export function Header() {\r\n  const { content } = useData();\r\n  const [open, setOpen] = useState(false);');
+}
+fs.writeFileSync('src/components/site.tsx', c);
+console.log('Fixed Header');

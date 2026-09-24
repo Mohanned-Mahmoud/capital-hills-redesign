@@ -116,6 +116,7 @@ export function Logo({
 }
 
 export function Header() {
+  const { content } = useData();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
