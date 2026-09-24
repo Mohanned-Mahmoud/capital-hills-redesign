@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
-import { projects } from '@/data/projects';
+import { useData } from '@/context/DataContext';
 import { CONTACT, ProjectCard, Shell, downloadBrochure } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem, CountUp } from '@/components/animations';
 
@@ -21,9 +21,11 @@ const heroImages = [
   'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=700',
 ];
 
-const tickerItems = projects.flatMap((p) => [`${p.name} — ${p.city}`, '·']);
+// removed tickerItems from here
 
 export default function Home() {
+  const { content, projects } = useData();
+  const tickerItems = projects.flatMap((p) => [`${p.name} — ${p.city}`, '·']);
   const [review, setReview] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
   const [selectedPartner, setSelectedPartner] = useState<{src: string, alt: string, desc: string} | null>(null);
@@ -65,12 +67,12 @@ export default function Home() {
                 Homes worth coming home to
               </p>
               <h1 className="text-[clamp(3.2rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f5f2e9]">
-                <span className="font-sans font-semibold">A clearer path</span><br />
+                <span className="font-sans font-semibold">{content['hero_title'] || 'A clearer path'}</span><br />
                 <span className="font-display italic text-[#947e82]">to </span>
                 <span className="font-mono">your place.</span>
               </h1>
               <p className="mt-8 max-w-md text-base leading-7 text-[#f5f2e9]/70 font-sans">
-                Thoughtfully planned communities. <span className="font-display italic text-lg text-[#f5f2e9]">A better tomorrow.</span>
+                {content['hero_subtitle'] || 'Thoughtfully planned communities. A better tomorrow.'}
               </p>
 
 
@@ -328,8 +330,7 @@ export default function Home() {
                   <div className="relative">
                     <span aria-hidden="true" className="absolute -top-6 -left-2 font-display text-[120px] leading-none text-[#947e82]/20 select-none">"</span>
                     <p className="relative font-display text-3xl md:text-4xl leading-[1.2] text-[#f5f2e9] tracking-tight pt-4">
-                      Trust is more than a promise.<br />
-                      <span className="italic text-[#947e82]">It is the foundation of everything we build.</span>
+                      {content['chairman_quote'] || 'Trust is more than a promise. It is the foundation of everything we build.'}
                     </p>
                   </div>
                 </FadeIn>

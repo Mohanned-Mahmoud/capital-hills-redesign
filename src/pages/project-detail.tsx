@@ -6,6 +6,8 @@ import { CONTACT, ProjectCard, Shell, downloadBrochure, BookVisitModal, PhoneNum
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 
 export default function ProjectDetail() {
+  const { projects } = useData();
+
   const { slug } = useParams<{ slug: string }>();
   const project = getProject(slug);
   const [saved, setSaved] = useState(false);

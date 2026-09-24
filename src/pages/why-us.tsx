@@ -12,6 +12,8 @@ const coreValues = [
 ];
 
 export default function WhyUs() {
+  const { projects } = useData();
+
   return (
     <Shell>
       <main>

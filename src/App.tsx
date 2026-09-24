@@ -11,6 +11,7 @@ import Contact from '@/pages/contact';
 import ProjectDetail from '@/pages/project-detail';
 import WhyUs from '@/pages/why-us';
 import { PageTransition } from '@/components/animations';
+import { DataProvider } from '@/context/DataContext';
 import {
   Route,
   Switch,
@@ -53,9 +54,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
+        <DataProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+        </DataProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

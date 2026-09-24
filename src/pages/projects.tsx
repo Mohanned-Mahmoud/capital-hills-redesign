@@ -6,6 +6,8 @@ import { ProjectCard, Shell } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 
 export default function Projects() {
+  const { projects: allProjects } = useData();
+
   const [cityFilter, setCityFilter] = useState('all');
 
   const filtered = useMemo(
