@@ -375,7 +375,7 @@ export function FloatingActions() {
     { label: 'Call', icon: Phone, href: CONTACT.tel },
     { label: 'WhatsApp', icon: MessageCircle, href: CONTACT.whatsapp },
     { label: 'Email', icon: Mail, href: CONTACT.email },
-    { label: 'SMS', icon: Send, href: CONTACT.sms },
+    { label: 'Direct Message', icon: Send, href: '/contact' },
   ];
   const isHandset = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
