@@ -1,11 +1,11 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
 import {
   ArrowRight, CalendarDays, ChevronLeft, ChevronRight,
-  MessageCircle, Phone, MapPin, Sparkles
+  MessageCircle, Phone, MapPin, Sparkles, X
 } from 'lucide-react';
 import { Link } from 'wouter';
-import { motion } from 'framer-motion';
-import { projects, formatPrice } from '@/data/projects';
+import { motion, AnimatePresence } from 'framer-motion';
+import { projects } from '@/data/projects';
 import { CONTACT, ProjectCard, Shell, downloadBrochure } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem, CountUp } from '@/components/animations';
 
@@ -26,6 +26,7 @@ const tickerItems = projects.flatMap((p) => [`${p.name} — ${p.city}`, '·']);
 export default function Home() {
   const [review, setReview] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
+  const [selectedPartner, setSelectedPartner] = useState<{src: string, alt: string, desc: string} | null>(null);
 
   // Auto-rotate reviews
   useEffect(() => {
@@ -38,7 +39,7 @@ export default function Home() {
     <Shell>
       <main>
         {/* ── HERO: Dark Immersive ── */}
-        <section className="relative min-h-[100dvh] overflow-hidden bg-[#240d10] text-[#f7f5ec] flex flex-col justify-center px-6 py-28 md:py-32 md:pl-[max(40px,calc((100vw-1220px)/2+40px))]">
+        <section className="relative min-h-[100dvh] overflow-hidden bg-[#250f12] text-[#f5f2e9] flex flex-col justify-center px-6 py-28 md:py-32 md:pl-[max(40px,calc((100vw-1220px)/2+40px))]">
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <img
@@ -47,28 +48,29 @@ export default function Home() {
               className="h-full w-full object-cover opacity-60 mix-blend-luminosity"
             />
             {/* Dark Maroon overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#240d10]/95 via-[#421318]/80 to-[#240d10]/40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#250f12]/95 via-[#421319]/80 to-[#250f12]/40" />
             
             {/* Watermark Logo (Emblem without wordmark) */}
             <div className="absolute right-[-10%] top-[20%] w-[800px] opacity-[0.035] pointer-events-none">
               <img src="/capital-hills-icon-light.png" alt="" className="w-full h-auto" />
             </div>
             {/* Thin circle lines */}
-            <div className="absolute right-[10%] top-[-10%] w-[600px] h-[600px] rounded-full border border-[#f7f5ec]/5 pointer-events-none" />
-            <div className="absolute left-[5%] bottom-[-20%] w-[400px] h-[400px] rounded-full border border-[#f7f5ec]/5 pointer-events-none" />
+            <div className="absolute right-[10%] top-[-10%] w-[600px] h-[600px] rounded-full border border-[#f5f2e9]/5 pointer-events-none" />
+            <div className="absolute left-[5%] bottom-[-20%] w-[400px] h-[400px] rounded-full border border-[#f5f2e9]/5 pointer-events-none" />
           </div>
 
           <div className="relative z-10 w-full max-w-2xl">
             <FadeIn>
-              <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#c49743] mb-6">
+              <p className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82] mb-6">
                 Homes worth coming home to
               </p>
-              <h1 className="font-display text-[clamp(4rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f7f5ec]">
-                A clearer path<br />
-                to <span className="italic text-[#c49743]">your place.</span>
+              <h1 className="text-[clamp(4rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f5f2e9]">
+                <span className="font-sans font-semibold">A clearer path</span><br />
+                <span className="font-display italic text-[#947e82]">to </span>
+                <span className="font-mono">your place.</span>
               </h1>
-              <p className="mt-8 max-w-md text-base leading-7 text-[#e2cbbd]">
-                Thoughtfully planned communities. A better tomorrow.
+              <p className="mt-8 max-w-md text-base leading-7 text-[#f5f2e9]/70 font-sans">
+                Thoughtfully planned communities. <span className="font-display italic text-lg text-[#f5f2e9]">A better tomorrow.</span>
               </p>
 
 
@@ -77,21 +79,21 @@ export default function Home() {
           
           {/* Bottom left corner text */}
           <div className="absolute bottom-8 left-6 md:left-[max(40px,calc((100vw-1220px)/2+40px))] z-10">
-            <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#c49743]/80 leading-relaxed">
+            <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#947e82]/80 leading-relaxed">
               Planning<br/>The Future
             </p>
           </div>
           
           {/* Bottom right corner text */}
           <div className="absolute bottom-8 right-6 md:right-[max(40px,calc((100vw-1220px)/2+40px))] z-10 text-right">
-            <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#c49743]/80 leading-relaxed">
+            <p className="font-mono text-[8px] uppercase tracking-[.25em] text-[#947e82]/80 leading-relaxed">
               Cairo - Egypt<br/>Since 2017
             </p>
           </div>
         </section>
 
         {/* ── STATS BAND ── */}
-        <section className="bg-[#4a1e2c] py-16">
+        <section className="bg-[#421319] py-16">
           <div className="container-shell">
             <StaggerContainer className="grid grid-cols-2 gap-8 md:grid-cols-4">
               {[
@@ -100,9 +102,9 @@ export default function Home() {
                 { value: 2017, suffix: '', label: 'Year established' },
                 { value: 15, suffix: ' yrs', label: 'Max instalment plan' },
               ].map(({ value, suffix, label }) => (
-                <StaggerItem key={label} className="border-l border-[#f6f0e4]/15 pl-6 first:border-0 first:pl-0 md:first:border-l md:first:pl-6">
-                  <CountUp target={value} suffix={suffix} className="font-display text-4xl text-[#d9ad51] md:text-5xl" />
-                  <p className="mt-2 font-mono text-[9px] uppercase tracking-[.18em] text-[#c4a98a]">{label}</p>
+                <StaggerItem key={label} className="border-l border-[#f5f2e9]/15 pl-6 first:border-0 first:pl-0 md:first:border-l md:first:pl-6">
+                  <CountUp target={value} suffix={suffix} className="font-display text-4xl text-[#f5f2e9] md:text-5xl" />
+                  <p className="mt-2 font-mono text-[9px] uppercase tracking-[.18em] text-[#947e82]">{label}</p>
                 </StaggerItem>
               ))}
             </StaggerContainer>
@@ -110,23 +112,23 @@ export default function Home() {
         </section>
 
         {/* ── TICKER + WHY US ── */}
-        <section className="bg-[#eadbc4] py-20 md:py-28 overflow-hidden">
+        <section className="bg-[#947e82] py-20 md:py-28 overflow-hidden">
           <div className="container-shell mb-12">
             <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-center">
               <FadeIn>
                 <p className="eyebrow">Why Capital Hills</p>
-                <h2 className="mt-4 font-display text-4xl leading-tight text-[#4a1e2c] md:text-5xl">
+                <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
                   Invest With<br /><span className="italic">Trust.</span>
                 </h2>
-                <p className="mt-5 max-w-sm text-sm leading-7 text-[#735e57]">
+                <p className="mt-5 max-w-sm text-sm leading-7 text-[#493337]">
                   We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.
                 </p>
-                <Link href="/why-us" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#9b702c]" data-testid="link-home-why-us">
+                <Link href="/why-us" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#421319]" data-testid="link-home-why-us">
                   Learn more about us <ArrowRight size={15} />
                 </Link>
               </FadeIn>
               {/* Values as horizontal numbered list */}
-              <StaggerContainer className="space-y-0 divide-y divide-[#cdb590]">
+              <StaggerContainer className="space-y-0 divide-y divide-[#947e82]">
                 {[
                   { n: '01', title: 'Trusted Relationships', copy: 'Creating spaces where people can live, work, grow, and connect.' },
                   { n: '02', title: '18 Key Projects', copy: 'Serving residential, commercial & mixed-use across Egypt.' },
@@ -134,10 +136,10 @@ export default function Home() {
                   { n: '04', title: 'People at the Heart', copy: 'A collaborative team committed to making a meaningful impact.' },
                 ].map(({ n, title, copy }) => (
                   <StaggerItem key={n} className="flex items-start gap-5 py-5">
-                    <span className="shrink-0 font-mono text-[10px] tracking-[.2em] text-[#c49743] pt-1">{n}</span>
+                    <span className="shrink-0 font-mono text-[10px] tracking-[.2em] text-[#421319]/50 pt-1">{n}</span>
                     <div>
-                      <h3 className="font-display text-xl text-[#4a1e2c]">{title}</h3>
-                      <p className="mt-1 text-sm leading-6 text-[#735e57]">{copy}</p>
+                      <h3 className="font-display text-xl text-[#421319]">{title}</h3>
+                      <p className="mt-1 text-sm leading-6 text-[#421319]/70">{copy}</p>
                     </div>
                   </StaggerItem>
                 ))}
@@ -145,10 +147,10 @@ export default function Home() {
             </div>
           </div>
           {/* Ticker marquee */}
-          <div className="relative overflow-hidden border-y border-[#cdb590] py-4">
+          <div className="relative overflow-hidden border-y border-[#947e82] py-4">
             <div className="ticker-track">
               {[...tickerItems, ...tickerItems].map((item, i) => (
-                <span key={i} className={`shrink-0 px-5 font-mono text-[10px] uppercase tracking-[.2em] ${item === '·' ? 'text-[#c49743]' : 'text-[#9b702c]'}`}>
+                <span key={i} className={`shrink-0 px-5 font-mono text-[10px] uppercase tracking-[.2em] ${item === '·' ? 'text-[#947e82]' : 'text-[#947e82]'}`}>
                   {item}
                 </span>
               ))}
@@ -157,19 +159,19 @@ export default function Home() {
         </section>
 
         {/* ── TESTIMONIALS: Full-width centered ── */}
-        <section className="py-20 md:py-28 bg-[#f6f0e4]">
+        <section className="py-20 md:py-28 bg-[#f5f2e9]">
           <div className="container-shell max-w-3xl text-center">
             <FadeIn>
               {/* Large decorative quote */}
-              <p className="font-display text-[120px] leading-none text-[#c49743]/25 select-none">"</p>
+              <p className="font-display text-[120px] leading-none text-[#947e82]/25 select-none">"</p>
               <blockquote
-                className="font-display text-2xl leading-snug text-[#4a1e2c] md:text-3xl -mt-8"
+                className="font-display text-2xl leading-snug text-[#421319] md:text-3xl -mt-8"
               >
                 {reviews[review].quote}
               </blockquote>
               <div className="mt-8">
-                <p className="text-sm font-bold text-[#4a1e2c]">{reviews[review].name}</p>
-                <p className="mt-1 font-mono text-[9px] uppercase tracking-[.18em] text-[#9b702c]">{reviews[review].detail}</p>
+                <p className="text-sm font-bold text-[#421319]">{reviews[review].name}</p>
+                <p className="mt-1 font-mono text-[9px] uppercase tracking-[.18em] text-[#947e82]">{reviews[review].detail}</p>
               </div>
               {/* Dots */}
               <div className="mt-8 flex items-center justify-center gap-2">
@@ -178,7 +180,7 @@ export default function Home() {
                     key={i}
                     onClick={() => { setReview(i); setAutoPlay(false); }}
                     aria-label={`Review ${i + 1}`}
-                    className={`h-2 rounded-full transition-all ${i === review ? 'w-6 bg-[#c49743]' : 'w-2 bg-[#cdb590]'}`}
+                    className={`h-2 rounded-full transition-all ${i === review ? 'w-6 bg-[#947e82]' : 'w-2 bg-[#947e82]'}`}
                     data-testid={`button-review-dot-${i}`}
                   />
                 ))}
@@ -187,36 +189,56 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── OFFERS ── */}
-        <section className="bg-[#4a1e2c] py-20 text-[#fff7e9] md:py-24">
-          <div className="container-shell">
-            <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
-              <FadeIn>
-                <p className="eyebrow">For a limited time</p>
-                <h2 className="mt-4 font-display text-4xl leading-tight md:text-5xl">
-                  A little more room<br /><span className="italic text-[#d9ad51]">to make your move.</span>
-                </h2>
-              </FadeIn>
-              <Link href="/contact" className="shrink-0 inline-flex items-center gap-2 text-sm font-bold text-[#d9ad51]" data-testid="link-offers-contact">
-                Ask about an offer <ArrowRight size={15} />
-              </Link>
-            </div>
-            <StaggerContainer className="mt-10 grid gap-px bg-[#f6f0e4]/10 md:grid-cols-3">
-              {projects.map((project, index) => (
-                <StaggerItem key={project.slug} className="bg-[#4a1e2c] p-6 md:p-8">
-                  <p className="font-mono text-[9px] uppercase tracking-[.2em] text-[#c9a36a]">{project.name}</p>
-                  <p className="mt-1 text-xs text-[#dbbfaa]">{project.city}</p>
-                  <h3 className="mt-10 font-display text-2xl leading-tight">{project.offer}</h3>
-                  <Link
-                    href={`/projects/${project.slug}`}
-                    className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-[#d9ad51]"
-                    data-testid={`link-offer-${index}`}
+        {/* ── PARTNERSHIPS & PARTNERS ── */}
+        <section className="bg-[#421319] py-20 text-[#f5f2e9] md:py-32 overflow-hidden relative">
+          <div className="absolute inset-0 z-0">
+             <div className="absolute right-[-10%] top-[0%] w-[500px] h-[500px] rounded-full border border-[#f5f2e9]/5 pointer-events-none" />
+             <div className="absolute left-[5%] bottom-[-20%] w-[300px] h-[300px] rounded-full border border-[#f5f2e9]/5 pointer-events-none" />
+          </div>
+          <div className="container-shell relative z-10">
+            <FadeIn>
+              <h2 className="font-display text-4xl leading-tight md:text-5xl text-center mb-6">
+                Our Success<br /><span className="italic text-[#947e82]">Partners.</span>
+              </h2>
+              <p className="text-center text-sm text-[#f5f2e9]/50 mb-16 font-mono tracking-widest uppercase text-[10px]">Trusted by leading names across Egypt</p>
+            </FadeIn>
+
+            {/* Logo wall */}
+            <FadeIn delay={0.15}>
+              <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+                {[
+                  { src: '/logos/amazon.png', alt: 'Amazon Hills', desc: "The meeting point of two ambitious visions: Capital Hills' local insight and Amazon Developments' global excellence. Through this collaboration, we deliver high-rise mixed-use destinations defined by precision, smart engineering, and modern architecture — setting new benchmarks for real estate in Egypt's New Administrative Capital and beyond." },
+                  { src: '/logos/e_and_egypt.png', alt: 'Etisalat and (e&)', desc: 'A leading regional provider of communications and digital services, partnering with us to redefine the concept of gated communities in Egypt. Through this collaboration, we integrate advanced infrastructure, smart services, and cutting-edge technology into our projects, delivering a new benchmark for connected, intelligent living.' },
+                  { src: '/logos/fbc.png', alt: 'Future Builders Company', desc: 'A trusted execution partner bringing engineering excellence, precision, and timely delivery to Capital Hills\' ambitious visions. Together, we integrate the mindset of a developer and contractor into one unified approach, ensuring projects are built to exacting standards while maintaining speed, quality, and client satisfaction.' },
+                  { src: '/logos/arkan.png', alt: 'Arkan Consultants', desc: 'A multidisciplinary consultancy partner providing integrated engineering and architectural solutions. Arkan Consultants bring technical rigor, coordination efficiency, and modern design thinking, ensuring Capital Hills\' projects meet high performance standards while maintaining architectural integrity.' },
+                  { src: '/logos/archplan.png', alt: 'Archplan Consulting', desc: 'A strategic architectural and planning partner contributing design clarity, spatial intelligence, and regulatory expertise to Capital Hills\' developments. Through thoughtful planning and coordinated execution, Archplan supports the delivery of well-structured projects that balance functionality, aesthetics, and long-term value.' },
+                  { src: '/logos/dma.png', alt: 'DMA Design | Engineering', desc: 'A trusted engineering partner delivering precise structural and technical solutions across Capital Hills\' portfolio. DMA\'s expertise ensures stability, efficiency, and compliance at every stage of development, supporting projects that are engineered to perform, endure, and scale.' },
+                  { src: '/logos/iec.png', alt: 'IEC', desc: 'A reliable engineering consultancy offering comprehensive design, supervision, and coordination services. IEC plays a key role in aligning technical execution with Capital Hills\' development vision, ensuring projects are delivered with accuracy, safety, and operational efficiency.' },
+                  { src: '/logos/adc.png', alt: 'ADC', desc: 'A creative architectural partner bringing contemporary design approaches and contextual sensitivity to Capital Hills\' developments. ADC contributes innovative concepts that enhance user experience while maintaining practicality, efficiency, and alignment with the overall project vision.' },
+                  { src: '/logos/hafez.png', alt: 'Hafez Consultants', desc: 'A leading architectural and urban design partner shaping the identity of several Capital Hills projects. With a strong focus on modern architecture, spatial harmony, and lifestyle integration, Hafez Consultants translate development vision into refined, livable environments built to stand the test of time.' },
+                  { src: '/logos/yba.png', alt: 'YBA Architects', desc: 'An architectural partner delivering elegant, functional, and well-coordinated design solutions. YBA Architects support Capital Hills by ensuring architectural consistency, clarity of execution, and thoughtful detailing across residential and mixed-use developments.' },
+                  { src: '/logos/ace.png', alt: 'ACE Bakhoum & Partners', desc: 'ACE is a leading multidisciplinary engineering consultancy providing comprehensive services in planning, design, project management, and construction supervision. With a multidisciplinary team and a global approach, ACE delivers tailored human and technical solutions to meet the unique requirements of every project.' },
+                  { src: '/logos/sag.png', alt: 'SAG Consulting Group', desc: 'SAG Consulting Group is a multidisciplinary engineering consultancy with over 30 years of experience in design, construction supervision, project management, and technical support. With a strong track record across Egypt, Africa, and the Middle East, SAG has successfully delivered landmark and large scale projects across a wide range of sectors.' },
+                  { src: '/logos/regus.png', alt: 'Regus', desc: 'Regus, part of International Workplace Group (IWG), is a globally recognized provider of flexible workspace solutions, offering premium serviced offices, coworking spaces, meeting rooms, and business services. Founded in 1989 in Brussels, Regus has built a strong international presence, delivering professional workplace environments designed to support business growth and productivity.' },
+                  { src: '/logos/raa.png', alt: 'RAYA Smart Buildings', desc: 'RAYA Smart Buildings specializes in developing smart, sustainable, and sophisticated commercial and office spaces, combining innovative design, energy efficiency, and technology to create high-quality business environments.' },
+                  { src: '/logos/electra.png', alt: 'Electra', desc: 'Electra by Raya provides smart and sustainable EV charging solutions, making electric mobility more accessible, convenient, and connected.' },
+                  { src: '/logos/healthy.png', alt: 'Healthy Care Medical Group', desc: 'Established in 2018, Healthy Care Medical Group is a leading Egyptian healthcare provider offering specialized medical services across multiple disciplines. Starting with a specialized polyclinic in Alexandria, the group has expanded its presence and obtained medical operator licenses for several projects in the New Administrative Capital, bringing integrated healthcare expertise to emerging communities.' },
+                ].map((partner) => (
+                  <button
+                    key={partner.alt}
+                    onClick={() => setSelectedPartner(partner)}
+                    className="flex items-center justify-center rounded-xl bg-[#f5f2e9]/5 border border-[#f5f2e9]/8 p-3 aspect-[3/2] hover:bg-[#f5f2e9]/10 transition cursor-pointer group"
+                    aria-label={`View details for ${partner.alt}`}
                   >
-                    View project <ArrowRight size={13} />
-                  </Link>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+                    <img
+                      src={partner.src}
+                      alt={partner.alt}
+                      className="max-h-16 max-w-full w-auto object-contain filter brightness-0 invert opacity-70 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110"
+                    />
+                  </button>
+                ))}
+              </div>
+            </FadeIn>
           </div>
         </section>
 
@@ -229,21 +251,21 @@ export default function Home() {
               alt="Capital Hills home"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-[#4a1e2c]/30" />
+            <div className="absolute inset-0 bg-[#421319]/30" />
           </div>
           {/* Right: CTA */}
-          <div className="flex flex-col justify-center bg-[#eadbc4] px-8 py-16 md:px-16">
+          <div className="flex flex-col justify-center bg-[#947e82] px-8 py-16 md:px-16">
             <FadeIn>
               <p className="eyebrow">One good conversation</p>
-              <h2 className="mt-4 font-display text-4xl leading-tight text-[#4a1e2c] md:text-5xl">
+              <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
                 Let's find the place that makes sense for you.
               </h2>
-              <p className="mt-5 max-w-sm text-sm leading-6 text-[#735e57]">
+              <p className="mt-5 max-w-sm text-sm leading-6 text-[#493337]">
                 Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.
               </p>
               <Link
                 href="/contact"
-                className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#4a1e2c] px-6 py-3.5 text-sm font-bold text-[#f6f0e4] transition hover:bg-[#3c1d2a]"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#421319] px-6 py-3.5 text-sm font-bold text-[#f5f2e9] transition hover:bg-[#421319]"
                 data-testid="link-contact-cta"
               >
                 Start a conversation <ArrowRight size={15} />
@@ -252,6 +274,59 @@ export default function Home() {
           </div>
         </section>
       </main>
+
+      <AnimatePresence>
+        {selectedPartner && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedPartner(null)}
+              className="absolute inset-0 bg-[#250f12]/80 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-[#421319] shadow-2xl"
+            >
+              {/* Decorative accent */}
+              <div className="absolute right-0 top-0 h-full w-1/3 bg-gradient-to-l from-[#250f12]/40 to-transparent pointer-events-none" />
+              
+              <div className="relative p-8 md:p-12">
+                <button
+                  onClick={() => setSelectedPartner(null)}
+                  className="absolute right-6 top-6 rounded-full p-2 text-[#f5f2e9]/50 transition hover:bg-[#250f12]/50 hover:text-[#f5f2e9]"
+                >
+                  <X size={20} />
+                </button>
+                
+                <p className="font-mono text-[10px] uppercase tracking-widest text-[#947e82] mb-10">
+                  Partnership Profile
+                </p>
+                
+                <div className="grid gap-10 md:grid-cols-[1.2fr_2fr] md:items-center">
+                  {/* Left: Huge Logo */}
+                  <div className="flex h-32 md:h-40 items-center justify-start border-b border-[#f5f2e9]/10 pb-8 md:border-b-0 md:border-r md:pb-0 md:pr-8">
+                    <img
+                      src={selectedPartner.src}
+                      alt={selectedPartner.alt}
+                      className="max-h-full max-w-full object-contain filter brightness-0 invert"
+                    />
+                  </div>
+                  
+                  {/* Right: Content */}
+                  <div>
+                    <h3 className="mb-4 font-display text-3xl md:text-4xl text-[#f5f2e9]">{selectedPartner.alt}</h3>
+                    <p className="text-sm md:text-base leading-relaxed text-[#f5f2e9]/70">{selectedPartner.desc}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </Shell>
   );
 }

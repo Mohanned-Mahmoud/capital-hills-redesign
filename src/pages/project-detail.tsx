@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Download, Heart, MapPin, MessageCircle, Share2, X } from 'lucide-react';
 import { Link, useParams } from 'wouter';
-import { formatPrice, getProject, projects } from '@/data/projects';
-import { CONTACT, ProjectCard, Shell, downloadBrochure, BookVisitModal } from '@/components/site';
+import { getProject, projects } from '@/data/projects';
+import { CONTACT, ProjectCard, Shell, downloadBrochure, BookVisitModal, PhoneNumber } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 
 export default function ProjectDetail() {
@@ -46,8 +46,8 @@ export default function ProjectDetail() {
         <main className="container-shell flex min-h-[70dvh] items-center justify-center py-32">
           <div className="text-center">
             <p className="eyebrow">Project not found</p>
-            <h1 className="mt-3 font-display text-4xl text-[#4a1e2c]">That home has moved on.</h1>
-            <Link href="/#projects" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#4a1e2c] px-5 py-3 text-sm font-bold text-[#fff8ea]" data-testid="link-not-found-projects">
+            <h1 className="mt-3 font-display text-4xl text-[#421319]">That home has moved on.</h1>
+            <Link href="/#projects" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#421319] px-5 py-3 text-sm font-bold text-[#f5f2e9]" data-testid="link-not-found-projects">
               See all projects <ArrowRight size={15} />
             </Link>
           </div>
@@ -89,7 +89,7 @@ export default function ProjectDetail() {
       <main className="pt-20 md:pt-24">
         {/* ── Breadcrumb ── */}
         <div className="container-shell py-5">
-          <Link href="/#projects" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[.2em] text-[#9b702c]" data-testid="link-back-projects">
+          <Link href="/#projects" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]" data-testid="link-back-projects">
             <ArrowLeft size={12} /> All projects
           </Link>
         </div>
@@ -100,7 +100,7 @@ export default function ProjectDetail() {
           <article>
             {/* Gallery */}
             <FadeIn>
-              <div className="relative overflow-hidden rounded-2xl bg-[#eadbc4]" style={{ aspectRatio: '16/10' }}>
+              <div className="relative overflow-hidden rounded-2xl bg-[#947e82]" style={{ aspectRatio: '16/10' }}>
                 <img
                   src={project.gallery[activeImage]}
                   alt={`${project.name} view ${activeImage + 1}`}
@@ -109,20 +109,20 @@ export default function ProjectDetail() {
                   data-testid="img-project-hero"
                 />
                 <div className="absolute inset-x-4 bottom-4 flex items-center justify-between pointer-events-none">
-                  <span className="rounded-full bg-[#26131b]/70 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[.15em] text-[#f6f0e4] backdrop-blur-sm pointer-events-auto">
+                  <span className="rounded-full bg-[#250f12]/70 px-3 py-1.5 font-mono text-[9px] uppercase tracking-[.15em] text-[#f5f2e9] backdrop-blur-sm pointer-events-auto">
                     {activeImage + 1} / {project.gallery.length}
                   </span>
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); setActiveImage((activeImage - 1 + project.gallery.length) % project.gallery.length); }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-[#26131b]/50 text-white backdrop-blur-sm transition hover:bg-[#26131b]/80"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-[#250f12]/50 text-white backdrop-blur-sm transition hover:bg-[#250f12]/80"
                   aria-label="Previous project image"
                 >
                   <ChevronLeft size={20} />
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); setActiveImage((activeImage + 1) % project.gallery.length); }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-[#26131b]/50 text-white backdrop-blur-sm transition hover:bg-[#26131b]/80"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-[#250f12]/50 text-white backdrop-blur-sm transition hover:bg-[#250f12]/80"
                   aria-label="Next project image"
                 >
                   <ChevronRight size={20} />
@@ -134,7 +134,7 @@ export default function ProjectDetail() {
                   <button
                     key={image}
                     onClick={() => setActiveImage(index)}
-                    className={`h-16 overflow-hidden rounded-lg border-2 transition ${activeImage === index ? 'border-[#9b702c]' : 'border-transparent opacity-60 hover:opacity-100'}`}
+                    className={`h-16 overflow-hidden rounded-lg border-2 transition ${activeImage === index ? 'border-[#947e82]' : 'border-transparent opacity-60 hover:opacity-100'}`}
                     aria-label={`View project image ${index + 1}`}
                     data-testid={`button-gallery-thumbnail-${index}`}
                   >
@@ -147,79 +147,100 @@ export default function ProjectDetail() {
             {/* Project heading (mobile only — sidebar shows on desktop) */}
             <div className="mt-8 md:hidden">
               <p className="eyebrow">Now welcoming reservations</p>
-              <h1 className="mt-3 font-display text-4xl text-[#4a1e2c]">{project.name}</h1>
-              <p className="mt-3 flex items-center gap-2 text-sm text-[#735e57]">
-                <MapPin size={13} className="text-[#9b702c]" /> {project.location}
+              <h1 className="mt-3 font-display text-4xl text-[#421319]">{project.name}</h1>
+              <p className="mt-3 flex items-center gap-2 text-sm text-[#493337]">
+                <MapPin size={13} className="text-[#947e82]" /> {project.location}
               </p>
             </div>
 
             {/* Description */}
-            <FadeIn delay={0.1} className="mt-10 border-t border-[#e5d4b9] pt-10">
+            <FadeIn delay={0.1} className="mt-10 border-t border-[#947e82] pt-10">
               <p className="eyebrow">The essentials</p>
-              <h2 className="mt-3 font-display text-3xl text-[#4a1e2c]">{project.highlight}</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-[#735e57]">
-                {project.description} Every home is delivered with a careful eye for light, storage, flow and the small rituals of daily life.
+              <h2 className="mt-3 font-display text-3xl text-[#421319]">{project.product.split('(')[0]}</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-[#493337]">
+                {project.location} {project.description && project.description}
               </p>
-              {/* Unit types */}
-              <div className="mt-8 grid grid-cols-2 gap-4 border-y border-[#e5d4b9] py-6 sm:grid-cols-3">
-                {project.unitTypes.map((unit) => (
-                  <div key={unit}>
-                    <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#967b70]">Available</p>
-                    <p className="mt-1.5 text-sm font-bold text-[#4a1e2c]">{unit}</p>
-                  </div>
-                ))}
-              </div>
+              {project.extraDetails && Object.keys(project.extraDetails).length > 0 && (
+                <div className="mt-8 grid grid-cols-2 gap-4 border-y border-[#947e82] py-6 sm:grid-cols-3">
+                  {Object.entries(project.extraDetails).map(([key, value]) => (
+                    <div key={key}>
+                      <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#493337]">{key}</p>
+                      <p className="mt-1.5 text-sm font-bold text-[#421319]">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </FadeIn>
 
-            {/* Payment plan */}
-            <FadeIn delay={0.15} className="mt-10 rounded-2xl bg-[#eadbc4] p-6 md:p-8">
-              <p className="eyebrow">Payment plan</p>
+            {/* Project Details */}
+            <FadeIn delay={0.15} className="mt-10 rounded-2xl bg-[#947e82] p-6 md:p-8">
+              <p className="eyebrow">Project Details</p>
               <div className="mt-6 space-y-4">
-                {project.paymentPlan.map((item, index) => (
-                  <div key={item.label} className="flex items-end justify-between border-b border-[#cdb590] pb-4 last:border-0">
-                    <span className="text-sm text-[#735e57]">{index + 1}. {item.label}</span>
-                    <strong className="font-display text-2xl text-[#4a1e2c]">{item.value}</strong>
+                {project.projectSpace && (
+                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
+                    <span className="text-sm text-[#421319]/70">Space</span>
+                    <strong className="font-display text-xl text-[#421319]">{project.projectSpace}</strong>
                   </div>
-                ))}
+                )}
+                {project.construction && (
+                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
+                    <span className="text-sm text-[#421319]/70">Construction</span>
+                    <strong className="font-display text-xl text-[#421319]">{project.construction}</strong>
+                  </div>
+                )}
+                {project.product && (
+                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
+                    <span className="text-sm text-[#421319]/70">Product</span>
+                    <strong className="font-display text-xl text-[#421319]">{project.product.split('(')[0]}</strong>
+                  </div>
+                )}
+                {project.finishing && (
+                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
+                    <span className="text-sm text-[#421319]/70">Finishing</span>
+                    <strong className="font-display text-xl text-[#421319]">{project.finishing.split(',')[0]}</strong>
+                  </div>
+                )}
               </div>
-              <div className="mt-5 rounded-xl bg-[#f5ead9] p-4">
-                <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#967b70]">Current offer</p>
-                <p className="mt-1 text-sm font-bold text-[#4a1e2c]">{project.offer}</p>
-              </div>
+              {project.delivery && (
+                <div className="mt-5 rounded-xl bg-[#f5f2e9] p-4">
+                  <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#421319]/60">Delivery</p>
+                  <p className="mt-1 text-sm font-bold text-[#421319]">{project.delivery}</p>
+                </div>
+              )}
             </FadeIn>
 
             {/* Map + WhatsApp */}
-            <FadeIn delay={0.1} className="mt-10 grid gap-6 border-t border-[#e5d4b9] pt-10 md:grid-cols-2">
+            <FadeIn delay={0.1} className="mt-10 grid gap-6 border-t border-[#947e82] pt-10 md:grid-cols-2">
               <div>
                 <p className="eyebrow">On the map</p>
-                <h3 className="mt-3 font-display text-2xl text-[#4a1e2c]">Come and see the exact place.</h3>
-                <div className="mt-5 overflow-hidden rounded-2xl border border-[#e5d4b9]">
+                <h3 className="mt-3 font-display text-2xl text-[#421319]">Come and see the exact place.</h3>
+                <div className="mt-5 overflow-hidden rounded-2xl border border-[#947e82]">
                   <iframe
-                    title={`Google Map showing ${project.mapLocation}`}
-                    src={`https://www.google.com/maps?q=${encodeURIComponent(project.mapLocation)}&output=embed`}
+                    title={`Google Map showing ${project.name}`}
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(`${project.name}, ${project.city}`)}&output=embed`}
                     className="h-56 w-full border-0 grayscale-[.15]"
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     data-testid="iframe-project-map"
                   />
-                  <div className="flex items-center justify-between bg-[#fffaf1] px-4 py-3">
-                    <p className="flex items-center gap-2 text-xs text-[#4a1e2c]"><MapPin size={12} className="text-[#9b702c]" />{project.mapLocation}</p>
-                    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(project.mapLocation)}`} target="_blank" rel="noreferrer" className="text-xs font-bold text-[#9b702c]" data-testid="link-open-map">Open ↗</a>
+                  <div className="flex items-center justify-between bg-[#f5f2e9] px-4 py-3">
+                    <p className="flex items-center gap-2 text-xs text-[#421319]"><MapPin size={12} className="text-[#947e82]" />{project.city}</p>
+                    <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${project.name}, ${project.city}`)}`} target="_blank" rel="noreferrer" className="text-xs font-bold text-[#947e82]" data-testid="link-open-map">Open ↗</a>
                   </div>
                 </div>
               </div>
-              <div className="rounded-2xl border border-[#e5d4b9] p-6">
+              <div className="rounded-2xl border border-[#947e82] p-6">
                 <p className="eyebrow">Have questions?</p>
-                <h3 className="mt-3 font-display text-2xl text-[#4a1e2c]">Ask us on WhatsApp.</h3>
-                <p className="mt-2 text-xs leading-5 text-[#735e57]">Scan to start a conversation about {project.name}.</p>
+                <h3 className="mt-3 font-display text-2xl text-[#421319]">Ask us on WhatsApp.</h3>
+                <p className="mt-2 text-xs leading-5 text-[#493337]/80">Scan to start a conversation about {project.name}.</p>
                 <div className="mt-5 flex items-center gap-4">
                   {qrFailed
-                    ? <a href={whatsappUrl} target="_blank" rel="noreferrer" className="grid h-28 w-28 place-items-center rounded-lg border border-[#e5d4b9] bg-[#f5ead9] p-3 text-center text-xs font-bold text-[#4a1e2c]" data-testid="qr-fallback">Open WhatsApp<br />to enquire</a>
-                    : <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(whatsappUrl)}`} alt={`QR code to message Capital Hills about ${project.name}`} className="h-28 w-28 rounded-lg border border-[#e5d4b9] p-2" loading="lazy" onError={() => setQrFailed(true)} data-testid="img-whatsapp-qr" />
+                    ? <a href={whatsappUrl} target="_blank" rel="noreferrer" className="grid h-28 w-28 place-items-center rounded-lg border border-[#947e82] bg-[#f5f2e9] p-3 text-center text-xs font-bold text-[#421319]" data-testid="qr-fallback">Open WhatsApp<br />to enquire</a>
+                    : <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(whatsappUrl)}`} alt={`QR code to message Capital Hills about ${project.name}`} className="h-28 w-28 rounded-lg border border-[#947e82] p-2" loading="lazy" onError={() => setQrFailed(true)} data-testid="img-whatsapp-qr" />
                   }
                   <div>
-                    <p className="text-sm font-bold text-[#4a1e2c]">{CONTACT.phone}</p>
-                    <a href={whatsappUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-[#9b702c]" data-testid="link-project-whatsapp">
+                    <p className="text-sm font-bold text-[#421319]"><PhoneNumber /></p>
+                    <a href={whatsappUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-[#947e82]" data-testid="link-project-whatsapp">
                       <MessageCircle size={13} /> Open WhatsApp
                     </a>
                   </div>
@@ -228,37 +249,39 @@ export default function ProjectDetail() {
             </FadeIn>
 
             {/* Compare */}
-            <FadeIn delay={0.1} className="mt-10 rounded-2xl bg-[#eadbc4] p-6 border-t border-[#e5d4b9] md:p-8">
+            <FadeIn delay={0.1} className="mt-10 rounded-2xl bg-[#947e82] p-6 border-t border-[#947e82] md:p-8">
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
                   <p className="eyebrow">Compare before you decide</p>
-                  <h3 className="mt-2 font-display text-2xl text-[#4a1e2c]">A second option, side by side.</h3>
+                  <h3 className="mt-2 font-display text-2xl text-[#421319]">A second option, side by side.</h3>
                 </div>
-                <select value={compare} onChange={(e) => setCompare(e.target.value)} aria-label="Choose a project to compare" className="rounded-lg border border-[#cdb590] bg-[#f8eddd] px-4 py-2.5 text-sm font-bold text-[#4a1e2c] outline-none" data-testid="select-compare-project">
+                <select value={compare} onChange={(e) => setCompare(e.target.value)} aria-label="Choose a project to compare" className="rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-2.5 text-sm font-bold text-[#421319] outline-none" data-testid="select-compare-project">
                   {projects.filter((item) => item.slug !== project.slug).map((item) => <option value={item.slug} key={item.slug}>{item.name}</option>)}
                 </select>
               </div>
-              <div className="mt-6 grid overflow-hidden rounded-xl border border-[#cdb590] bg-[#f5ead9] md:grid-cols-2">
-                <div className="grid grid-cols-2 border-b border-[#cdb590] md:border-b-0 md:border-r">
-                  <div className="p-5"><p className="eyebrow text-[8px]">This project</p><h4 className="mt-2 font-display text-xl text-[#4a1e2c]">{project.name}</h4></div>
-                  <div className="border-l border-[#cdb590] p-5"><p className="eyebrow text-[8px]">From</p><p className="mt-2 font-display text-xl text-[#4a1e2c]">{formatPrice(project.startingPrice)}</p></div>
+              <div className="mt-6 grid overflow-hidden rounded-xl border border-[#947e82] bg-[#f5f2e9] md:grid-cols-2">
+                <div className="grid grid-cols-2 border-b border-[#947e82] md:border-b-0 md:border-r">
+                  <div className="p-5"><p className="eyebrow text-[8px]">This project</p><h4 className="mt-2 font-display text-xl text-[#421319]">{project.name}</h4></div>
+                  <div className="border-l border-[#947e82] p-5"><p className="eyebrow text-[8px]">Space</p><p className="mt-2 font-display text-xl text-[#421319]">{project.projectSpace ?? '—'}</p></div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div className="p-5"><p className="eyebrow text-[8px]">Compare with</p><h4 className="mt-2 font-display text-xl text-[#4a1e2c]">{comparison.name}</h4></div>
-                  <div className="border-l border-[#cdb590] p-5"><p className="eyebrow text-[8px]">From</p><p className="mt-2 font-display text-xl text-[#4a1e2c]">{formatPrice(comparison.startingPrice)}</p></div>
+                  <div className="p-5"><p className="eyebrow text-[8px]">Compare with</p><h4 className="mt-2 font-display text-xl text-[#421319]">{comparison.name}</h4></div>
+                  <div className="border-l border-[#947e82] p-5"><p className="eyebrow text-[8px]">Space</p><p className="mt-2 font-display text-xl text-[#421319]">{comparison.projectSpace ?? '—'}</p></div>
                 </div>
               </div>
-              <div className="mt-4 grid gap-3 text-xs text-[#735e57] md:grid-cols-3">
-                <p><strong className="text-[#4a1e2c]">Location:</strong> {project.city} vs {comparison.city}</p>
-                <p><strong className="text-[#4a1e2c]">Availability:</strong> {project.availability} vs {comparison.availability}</p>
-                <p><strong className="text-[#4a1e2c]">Handover:</strong> {project.handover} vs {comparison.handover}</p>
+              <div className="mt-4 grid gap-3 text-xs text-[#493337] md:grid-cols-3">
+                <p><strong className="text-[#421319]">Location:</strong> {project.city} vs {comparison.city}</p>
+                <p><strong className="text-[#421319]">Product:</strong> {project.product.split('(')[0]} vs {comparison.product.split('(')[0]}</p>
+                {(project.delivery || comparison.delivery) && (
+                  <p><strong className="text-[#421319]">Delivery:</strong> {project.delivery ?? '—'} vs {comparison.delivery ?? '—'}</p>
+                )}
               </div>
             </FadeIn>
 
             {/* Related */}
-            <section className="mt-16 border-t border-[#e5d4b9] pt-12">
+            <section className="mt-16 border-t border-[#947e82] pt-12">
               <p className="eyebrow">Keep looking</p>
-              <h3 className="mt-3 font-display text-2xl text-[#4a1e2c]">There may be another good fit.</h3>
+              <h3 className="mt-3 font-display text-2xl text-[#421319]">There may be another good fit.</h3>
               <StaggerContainer className="mt-6 grid gap-5 md:grid-cols-2">
                 {projects.filter((item) => item.slug !== project.slug).slice(0, 2).map((item) => (
                   <StaggerItem key={item.slug}><ProjectCard project={item} /></StaggerItem>
@@ -269,31 +292,33 @@ export default function ProjectDetail() {
 
           {/* ── RIGHT: Sticky sidebar ── */}
           <aside className="hidden md:block">
-            <div className="sticky top-28 rounded-2xl bg-[#4a1e2c] p-7 text-[#fff8ea]">
-              <p className="eyebrow">Now welcoming reservations</p>
-              <h1 className="mt-4 font-display text-4xl leading-tight">{project.name}</h1>
-              <p className="mt-3 flex items-center gap-2 text-sm text-[#dfc9be]">
-                <MapPin size={13} className="text-[#d9ad51]" /> {project.location}
+            <div className="sticky top-28 rounded-2xl bg-[#421319] p-7 text-[#f5f2e9]">
+              <p className="eyebrow text-[#947e82]">Now welcoming reservations</p>
+              <h1 className="mt-4 font-display text-4xl leading-tight text-[#f5f2e9]">{project.name}</h1>
+              <p className="mt-3 flex items-start gap-2 text-sm text-[#f5f2e9]/60 leading-5">
+                <MapPin size={13} className="text-[#947e82] mt-0.5 shrink-0" /> {project.location}
               </p>
-              <p className="mt-5 text-sm leading-6 text-[#dfc9be]">{project.description}</p>
-              <div className="mt-8 border-t border-[#f7eede]/20 pt-5">
-                <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#d9ad51]">Starting from</p>
-                <p className="mt-2 font-display text-3xl">{formatPrice(project.startingPrice)}</p>
-                <p className="mt-1.5 text-xs text-[#dfc9be]">{project.availability} · Handover {project.handover}</p>
+              {project.description && (
+                <p className="mt-5 text-sm leading-6 text-[#f5f2e9]/60">{project.description}</p>
+              )}
+              <div className="mt-8 border-t border-[#f5f2e9]/10 pt-5">
+                <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#947e82]">Space</p>
+                <p className="mt-2 font-display text-2xl text-[#f5f2e9]">{project.projectSpace}</p>
+                <p className="mt-1.5 text-xs text-[#f5f2e9]/50">{project.product.split('(')[0]}{project.delivery ? ` · Delivery ${project.delivery}` : ''}</p>
               </div>
               <div className="mt-6 flex gap-2">
-                <button onClick={() => setBookModalOpen(true)} className="flex-1 rounded-lg bg-[#c49743] py-3 text-sm font-bold text-[#3c1d2a] transition hover:bg-[#d9ad51]" data-testid="button-book-visit">
+                <button onClick={() => setBookModalOpen(true)} className="flex-1 rounded-lg bg-[#947e82] py-3 text-sm font-bold text-[#231f20] transition hover:opacity-90" data-testid="button-book-visit">
                   Book a visit
                 </button>
-                <button onClick={saveProject} className="grid h-11 w-11 place-items-center rounded-lg border border-[#ead8ba]/40 transition hover:bg-white/10" aria-label={saved ? 'Remove saved project' : 'Save project'} data-testid="button-project-save">
-                  <Heart size={17} fill={saved ? '#d9ad51' : 'none'} className={saved ? 'text-[#d9ad51]' : ''} />
+                <button onClick={saveProject} className="grid h-11 w-11 place-items-center rounded-lg border border-[#f5f2e9]/20 text-[#f5f2e9] transition hover:bg-white/10" aria-label={saved ? 'Remove saved project' : 'Save project'} data-testid="button-project-save">
+                  <Heart size={17} fill={saved ? '#947e82' : 'none'} className={saved ? 'text-[#947e82]' : 'text-[#f5f2e9]'} />
                 </button>
-                <button onClick={shareProject} className="grid h-11 w-11 place-items-center rounded-lg border border-[#ead8ba]/40 transition hover:bg-white/10" aria-label="Share project" data-testid="button-project-share">
+                <button onClick={shareProject} className="grid h-11 w-11 place-items-center rounded-lg border border-[#f5f2e9]/20 text-[#f5f2e9] transition hover:bg-white/10" aria-label="Share project" data-testid="button-project-share">
                   <Share2 size={16} />
                 </button>
               </div>
-              {shareMessage && <p role="status" className="mt-3 text-center text-xs text-[#d9ad51]" data-testid="status-share">{shareMessage}</p>}
-              <button onClick={() => downloadBrochure(project)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[#ead8ba]/40 py-2.5 text-xs font-bold text-[#f6f0e4] transition hover:bg-white/10" data-testid="button-download-brochure">
+              {shareMessage && <p role="status" className="mt-3 text-center text-xs text-[#947e82]" data-testid="status-share">{shareMessage}</p>}
+              <button onClick={() => downloadBrochure(project)} className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[#f5f2e9]/20 py-2.5 text-xs font-bold text-[#f5f2e9] transition hover:bg-white/10" data-testid="button-download-brochure">
                 <Download size={13} /> Download PDF brochure
               </button>
             </div>
@@ -303,15 +328,15 @@ export default function ProjectDetail() {
 
       <BookVisitModal isOpen={bookModalOpen} onClose={() => setBookModalOpen(false)} projectName={project.name} />
       {galleryOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#3c1d2a]/95 p-5" role="dialog" aria-modal="true" aria-label={`${project.name} photo gallery`}>
-          <button onClick={() => setGalleryOpen(false)} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-lg bg-[#fff8ea] text-[#4a1e2c]" aria-label="Close gallery" data-testid="button-close-gallery">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#421319]/95 p-5" role="dialog" aria-modal="true" aria-label={`${project.name} photo gallery`}>
+          <button onClick={() => setGalleryOpen(false)} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-lg bg-[#f5f2e9] text-[#421319]" aria-label="Close gallery" data-testid="button-close-gallery">
             <X size={18} />
           </button>
-          <button onClick={() => setActiveImage((activeImage - 1 + project.gallery.length) % project.gallery.length)} className="absolute left-5 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full bg-[#fff8ea]/10 text-white transition hover:bg-[#fff8ea]/20" aria-label="Previous image">
+          <button onClick={() => setActiveImage((activeImage - 1 + project.gallery.length) % project.gallery.length)} className="absolute left-5 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full bg-[#f5f2e9]/10 text-white transition hover:bg-[#f5f2e9]/20" aria-label="Previous image">
             <ChevronLeft size={24} />
           </button>
           <img src={project.gallery[activeImage]} alt={`${project.name} enlarged`} className="max-h-[85vh] max-w-full rounded-xl object-contain" />
-          <button onClick={() => setActiveImage((activeImage + 1) % project.gallery.length)} className="absolute right-5 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full bg-[#fff8ea]/10 text-white transition hover:bg-[#fff8ea]/20" aria-label="Next image">
+          <button onClick={() => setActiveImage((activeImage + 1) % project.gallery.length)} className="absolute right-5 top-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full bg-[#f5f2e9]/10 text-white transition hover:bg-[#f5f2e9]/20" aria-label="Next image">
             <ChevronRight size={24} />
           </button>
         </div>

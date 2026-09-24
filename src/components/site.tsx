@@ -5,16 +5,81 @@ import {
   Facebook, Heart, Instagram, Mail, Menu, MessageCircle,
   Phone, Send, X, Download, MapPin
 } from 'lucide-react';
-import { type Project, formatPrice } from '@/data/projects';
+import { type Project } from '@/data/projects';
 import { FadeIn } from '@/components/animations';
 
 export const CONTACT = {
-  phone: '+20 100 555 0190',
-  tel: 'tel:+201005550190',
+  phone: '16794',
+  tel: 'tel:16794',
   whatsapp: 'https://wa.me/201005550190?text=Hello%20Capital%20Hills%2C%20I%27d%20like%20to%20ask%20about%20a%20project.',
   email: 'mailto:hello@capitalhillsdevelopments.eg?subject=Capital%20Hills%20enquiry',
-  sms: 'sms:+201005550190',
+  sms: 'sms:16794',
+  address: 'HQ: Galleria 40, Zayed | Downtown, New Cairo\nSales & Customer Service: Arkan Plaza, Zayed',
 };
+
+export function PhoneNumber() {
+  return (
+    <span className="whitespace-nowrap inline-flex items-baseline font-display tracking-tight">
+      <span>16</span>
+      <span className="text-[1.3em] font-medium leading-[0] mx-[1px] -translate-y-[2px]">7</span>
+      <span>94</span>
+    </span>
+  );
+}
+
+/**
+ * Samples the average luminance of an image (0 = pure black, 1 = pure white).
+ * `region` controls which slice of the image to sample:
+ *   'bottom' → where the project name text overlays
+ *   'top'    → where the city badge lives
+ * Falls back to 'dark' (white text) on CORS or load errors.
+ */
+function useImageLuminance(src: string, region: 'top' | 'bottom' = 'bottom'): 'dark' | 'light' {
+  const [tone, setTone] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    if (!src) return;
+    const img = new Image();
+    // Try anonymous CORS — Pexels and most CDNs allow it.
+    img.crossOrigin = 'anonymous';
+
+    img.onload = () => {
+      try {
+        const W = 80, H = 80;
+        const canvas = document.createElement('canvas');
+        canvas.width = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Sample bottom 40 % or top 20 % of the image depending on region
+        const [sy, sh] =
+          region === 'bottom'
+            ? [img.naturalHeight * 0.6, img.naturalHeight * 0.4]
+            : [0, img.naturalHeight * 0.25];
+
+        ctx.drawImage(img, 0, sy, img.naturalWidth, sh, 0, 0, W, H);
+        const { data } = ctx.getImageData(0, 0, W, H);
+
+        let total = 0;
+        const pixels = W * H;
+        for (let i = 0; i < data.length; i += 4) {
+          // Perceived luminance (ITU-R BT.601)
+          total += (data[i] * 299 + data[i + 1] * 587 + data[i + 2] * 114) / 1000;
+        }
+        // avg is 0-255; threshold at 128
+        setTone(total / pixels < 128 ? 'dark' : 'light');
+      } catch {
+        setTone('dark'); // canvas blocked (CORS) → safe fallback
+      }
+    };
+
+    img.onerror = () => setTone('dark');
+    img.src = src;
+  }, [src, region]);
+
+  return tone;
+}
 
 export function Logo({
   light = false,
@@ -69,10 +134,10 @@ export function Header() {
       <div
         className={`nav-pill mx-auto flex max-w-5xl items-center justify-between rounded-full px-4 py-2.5 transition-all duration-500 ${
           scrolled
-            ? 'bg-[#3c1d2a]/90 shadow-[0_8px_40px_rgba(60,29,42,.28)]'
+            ? 'bg-[#421319]/90 shadow-[0_8px_40px_rgba(60,29,42,.28)]'
             : lightPage
-            ? 'bg-[#3c1d2a]/60'
-            : 'bg-[#f6f0e4]/80 shadow-[0_2px_20px_rgba(75,30,44,.07)]'
+            ? 'bg-[#421319]/60'
+            : 'bg-[#f5f2e9]/80 shadow-[0_2px_20px_rgba(75,30,44,.07)]'
         }`}
       >
         <Logo light={scrolled || lightPage} />
@@ -85,8 +150,8 @@ export function Header() {
               href={href}
               className={`focus-ring rounded-full px-4 py-1.5 text-[13px] font-semibold transition ${
                 scrolled || lightPage
-                  ? 'text-[#f7eede]/75 hover:bg-white/10 hover:text-[#d9ad51]'
-                  : 'text-[#4a1e2c]/70 hover:bg-[#4a1e2c]/08 hover:text-[#4a1e2c]'
+                  ? 'text-[#f5f2e9]/75 hover:bg-white/10 hover:text-[#947e82]'
+                  : 'text-[#421319]/70 hover:bg-[#421319]/08 hover:text-[#421319]'
               }`}
               data-testid={`link-nav-${label.toLowerCase().replace(' ', '-')}`}
             >
@@ -100,8 +165,8 @@ export function Header() {
             href={CONTACT.tel}
             className={`focus-ring hidden items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition md:flex ${
               scrolled || lightPage
-                ? 'bg-[#c49743] text-[#3c1d2a] hover:bg-[#d9ad51]'
-                : 'bg-[#4a1e2c] text-[#fff8ea] hover:bg-[#3c1d2a]'
+                ? 'bg-[#947e82] text-[#421319] hover:bg-[#947e82]'
+                : 'bg-[#421319] text-[#f5f2e9] hover:bg-[#421319]'
             }`}
             data-testid="link-header-call"
           >
@@ -111,8 +176,8 @@ export function Header() {
             onClick={() => setOpen(!open)}
             className={`focus-ring grid h-9 w-9 place-items-center rounded-full transition md:hidden ${
               scrolled || lightPage
-                ? 'text-[#f7eede] hover:bg-white/10'
-                : 'text-[#4a1e2c] hover:bg-[#4a1e2c]/10'
+                ? 'text-[#f5f2e9] hover:bg-white/10'
+                : 'text-[#421319] hover:bg-[#421319]/10'
             }`}
             aria-label="Open menu"
             data-testid="button-open-menu"
@@ -124,13 +189,13 @@ export function Header() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="mx-auto mt-2 max-w-5xl overflow-hidden rounded-2xl border border-[#ead8ba]/30 bg-[#3c1d2a] shadow-xl md:hidden">
+        <div className="mx-auto mt-2 max-w-5xl overflow-hidden rounded-2xl border border-[#947e82]/30 bg-[#421319] shadow-xl md:hidden">
           {nav.map(([label, href]) => (
             <Link
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="block border-b border-white/10 px-5 py-4 text-sm font-semibold text-[#f7eede] last:border-0"
+              className="block border-b border-white/10 px-5 py-4 text-sm font-semibold text-[#f5f2e9] last:border-0"
               data-testid={`link-mobile-${label.toLowerCase().replace(' ', '-')}`}
             >
               {label}
@@ -138,10 +203,10 @@ export function Header() {
           ))}
           <a
             href={CONTACT.tel}
-            className="flex items-center gap-2 px-5 py-4 text-sm font-bold text-[#d9ad51]"
+            className="flex items-center gap-2 px-5 py-4 text-sm font-bold text-[#947e82]"
             data-testid="link-mobile-call"
           >
-            <Phone size={14} /> {CONTACT.phone}
+            <Phone size={14} /> <PhoneNumber />
           </a>
         </div>
       )}
@@ -151,7 +216,7 @@ export function Header() {
 
 export function Footer() {
   return (
-    <footer className="bg-[#421318] pb-24 pt-16 text-[#f7f5ec] md:pb-12">
+    <footer className="bg-[#421319] pb-24 pt-16 text-[#f5f2e9] md:pb-12">
       <div className="container-shell grid gap-12 md:grid-cols-[1.4fr_.8fr_.8fr_1.2fr]">
         <div>
           <Logo light variant="full" className="h-10 md:h-12 w-auto object-contain" />
@@ -159,10 +224,10 @@ export function Footer() {
             Homes with sound thinking behind them. For the way Egyptians actually live.
           </p>
           <div className="mt-6 flex gap-3">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#240d10] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-instagram">
+            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#250f12] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-instagram">
               <Instagram size={16} />
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#240d10] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-facebook">
+            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#250f12] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-facebook">
               <Facebook size={16} />
             </a>
           </div>
@@ -178,16 +243,15 @@ export function Footer() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Visit</p>
           <div className="space-y-4 text-sm leading-5 text-[#947e82]">
-            <div><strong className="font-bold text-[#f7f5ec]">Main HQ</strong><br />Down Town, Bldg S1 A<br />New Cairo</div>
-            <div><strong className="font-bold text-[#f7f5ec]">West Arkan HQ</strong><br />Arkan Plaza, Bldg 10<br />Sheikh Zayed</div>
-            <div><strong className="font-bold text-[#f7f5ec]">West Galleria HQ</strong><br />Galleria 40, North Tower<br />Sheikh Zayed</div>
+            <div><strong className="font-bold text-[#f5f2e9]">HQ</strong><br />Galleria 40, Zayed<br />Downtown, New Cairo</div>
+            <div><strong className="font-bold text-[#f5f2e9]">Sales & Customer Service</strong><br />Arkan Plaza, Zayed</div>
           </div>
         </div>
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Need a second opinion?</p>
           <p className="text-sm leading-6 text-[#947e82]">Tell us what you are looking for. A real person will call with a clear answer.</p>
-          <a href={CONTACT.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f7f5ec] px-5 py-3 text-sm font-bold text-[#050505] transition-colors hover:bg-white" data-testid="link-footer-phone">
-            <Phone size={14} /> {CONTACT.phone}
+          <a href={CONTACT.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f5f2e9] px-5 py-3 text-sm font-bold text-[#231f20] transition-colors hover:bg-white" data-testid="link-footer-phone">
+            <Phone size={14} /> <PhoneNumber />
           </a>
         </div>
       </div>
@@ -202,6 +266,15 @@ export function Footer() {
 export function ProjectCard({ project, featured = false }: { project: Project; featured?: boolean }) {
   const [saved, setSaved] = useState(() => localStorage.getItem('capital-hills-favourites')?.includes(project.slug) ?? false);
 
+  // Analyse image brightness — pick text colour that guarantees contrast
+  const bottomTone = useImageLuminance(project.gallery[0], 'bottom'); // for name overlay
+  const topTone    = useImageLuminance(project.gallery[0], 'top');    // for city badge
+
+  const bottomText = bottomTone === 'dark' ? 'text-[#f5f2e9]' : 'text-[#231f20]';
+  const topText    = topTone    === 'dark' ? 'text-[#f5f2e9]' : 'text-[#231f20]';
+  // Semi-transparent bg pill behind city so it's always readable regardless of tone
+  const topBg      = topTone    === 'dark' ? 'bg-[#000]/25' : 'bg-[#fff]/40';
+
   const toggleSave = (event: React.MouseEvent) => {
     event.preventDefault();
     const current = JSON.parse(localStorage.getItem('capital-hills-favourites') || '[]') as string[];
@@ -212,7 +285,7 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
 
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden bg-[#eadbc4] transition duration-400 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(74,30,44,.15)] ${featured ? 'md:col-span-2' : ''}`}
+      className={`group relative flex flex-col overflow-hidden bg-[#947e82] transition duration-400 hover:-translate-y-1 hover:shadow-[0_24px_48px_rgba(74,30,44,.15)] ${featured ? 'md:col-span-2' : ''}`}
       style={{ borderRadius: 16 }}
       data-testid={`card-project-${project.slug}`}
     >
@@ -225,49 +298,58 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
             loading="lazy"
             className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.06]"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#26131b]/80 via-[#26131b]/20 to-transparent" />
-          {/* City badge */}
-          <span className="absolute left-4 top-4 font-mono text-[9px] uppercase tracking-[.2em] text-[#f6f0e4]/80">
+          {/* City badge — colour auto-set by top-region luminance */}
+          <span className={`absolute left-4 top-4 ${topBg} backdrop-blur-md rounded-full px-4 py-1.5 font-mono text-[11px] font-bold uppercase tracking-widest ${topText}`}>
             {project.city}
           </span>
           {/* Save */}
           <button
             onClick={toggleSave}
             aria-label={saved ? 'Remove from saved' : 'Save project'}
-            className="absolute right-4 top-4 z-10 grid h-8 w-8 place-items-center rounded-full bg-[#f6f0e4]/20 text-white backdrop-blur-sm transition hover:bg-[#f6f0e4]/40"
+            className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-[#f5f2e9]/20 text-white backdrop-blur-sm transition hover:bg-[#f5f2e9]/40"
             data-testid={`button-save-${project.slug}`}
           >
-            <Heart size={14} fill={saved ? '#d9ad51' : 'none'} className={saved ? 'text-[#d9ad51]' : ''} />
+            <Heart size={16} fill={saved ? '#947e82' : 'none'} className={saved ? 'text-[#947e82]' : ''} />
           </button>
-          {/* Bottom text always visible */}
-          <div className="absolute bottom-0 inset-x-0 p-5">
-            <p className="text-xs text-[#e2cbbd]">{project.location}</p>
-            <h3 className="mt-1 font-display text-2xl leading-tight text-white">{project.name}</h3>
+          {/* Adaptive gradient — always toward the bottom text, using the image's own tone */}
+          <div className={`absolute inset-x-0 bottom-0 h-3/5 ${
+            bottomTone === 'dark'
+              ? 'bg-gradient-to-t from-[#231f20]/90 to-transparent'
+              : 'bg-gradient-to-t from-[#f5f2e9]/90 to-transparent'
+          }`} />
+          {/* Bottom text — colour auto-set by bottom-region luminance */}
+          <div className={`absolute bottom-0 inset-x-0 p-6 ${bottomText}`}>
+            <p className="text-sm font-semibold line-clamp-1 opacity-90 drop-shadow-md">{project.location}</p>
+            <h3 className="mt-2 font-display text-4xl leading-tight drop-shadow-lg">{project.name}</h3>
           </div>
           {/* Hover reveal panel */}
-          <div className="project-card-reveal absolute bottom-0 inset-x-0 bg-[#4a1e2c] px-5 py-4">
+          <div className="project-card-reveal absolute bottom-0 inset-x-0 bg-[#421319] px-5 py-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#c9a36a]">From</p>
-                <p className="mt-1 font-display text-xl text-[#f6f0e4]">{formatPrice(project.startingPrice)}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-mono text-[9px] uppercase tracking-[.18em] text-[#c9a36a]">Handover</p>
-                <p className="mt-1 text-sm font-bold text-[#f6f0e4]">{project.handover}</p>
-              </div>
+              {project.projectSpace && (
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-[.18em] text-accent">Space</p>
+                  <p className="mt-1 font-display text-xl text-[#f5f2e9]">{project.projectSpace}</p>
+                </div>
+              )}
+              {project.delivery && (
+                <div className="text-right">
+                  <p className="font-mono text-[9px] uppercase tracking-[.18em] text-accent">Delivery</p>
+                  <p className="mt-1 text-sm font-bold text-[#f5f2e9]">{project.delivery}</p>
+                </div>
+              )}
             </div>
             <div className="mt-3 flex items-center gap-2">
-              <span className="flex-1 text-center rounded-sm bg-[#c49743] py-2 text-xs font-bold text-[#3c1d2a]">View project →</span>
+              <span className="flex-1 text-center rounded-sm bg-[#947e82] py-2 text-xs font-bold text-[#421319]">View project →</span>
             </div>
           </div>
         </div>
       </Link>
       {/* Footer strip */}
-      <div className="flex items-center justify-between border-t border-[#cdb590]/50 bg-[#f5ead9] px-4 py-3">
-        <span className="font-mono text-[9px] uppercase tracking-[.15em] text-[#9b702c]">{project.availability}</span>
-        <div className="flex gap-1.5">
-          <a href={CONTACT.tel} aria-label="Call" className="grid h-7 w-7 place-items-center rounded-full bg-[#eadbc4] text-[#9b702c] transition hover:bg-[#4a1e2c] hover:text-[#d9ad51]"><Phone size={12} /></a>
-          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-7 w-7 place-items-center rounded-full bg-[#eadbc4] text-[#9b702c] transition hover:bg-[#4a1e2c] hover:text-[#d9ad51]"><MessageCircle size={12} /></a>
+      <div className="flex items-center justify-between border-t border-[#947e82]/50 bg-[#f5f2e9] px-5 py-4">
+        <span className="font-mono text-[11px] font-bold uppercase tracking-[.2em] text-[#947e82] truncate max-w-[200px]">{project.product.split('(')[0]}</span>
+        <div className="flex gap-2">
+          <a href={CONTACT.tel} aria-label="Call" className="grid h-9 w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><Phone size={14} /></a>
+          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-9 w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><MessageCircle size={14} /></a>
         </div>
       </div>
     </article>
@@ -318,7 +400,7 @@ export function FloatingActions() {
   return (
     <div className="fixed bottom-4 right-4 z-[60] flex flex-col items-end gap-3 md:bottom-6 md:right-6">
       {notice && (
-        <div role="status" className="absolute bottom-[74px] right-[74px] w-fit whitespace-nowrap rounded-lg bg-[#3c1d2a] px-3 py-2 text-[11px] font-semibold text-[#fff8ea] shadow-lg">
+        <div role="status" className="absolute bottom-[74px] right-[74px] w-fit whitespace-nowrap rounded-lg bg-[#421319] px-3 py-2 text-[11px] font-semibold text-[#f5f2e9] shadow-lg">
           {notice}
         </div>
       )}
@@ -334,10 +416,10 @@ export function FloatingActions() {
             aria-label={`${label} Capital Hills`}
             data-testid={`floating-${label.toLowerCase()}`}
           >
-            <span className="rounded-lg bg-[#3c1d2a] px-3 py-1.5 text-xs font-bold text-[#fff8ea] shadow-lg transition group-hover:bg-[#d9ad51] group-hover:text-[#3c1d2a]">
+            <span className="rounded-lg bg-[#421319] px-3 py-1.5 text-xs font-bold text-[#f5f2e9] shadow-lg transition group-hover:bg-[#947e82] group-hover:text-[#421319]">
               {label}
             </span>
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-[#3c1d2a] text-[#d9ad51] shadow-lg transition group-hover:bg-[#d9ad51] group-hover:text-[#3c1d2a]">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-[#421319] text-[#947e82] shadow-lg transition group-hover:bg-[#947e82] group-hover:text-[#421319]">
               <Icon size={19} strokeWidth={1.8} />
             </span>
           </a>
@@ -345,7 +427,7 @@ export function FloatingActions() {
       </div>
       <button
         onClick={() => setOpen(!open)}
-        className="focus-ring relative grid h-13 w-13 place-items-center rounded-full bg-[#d9ad51] text-[#3c1d2a] shadow-[0_8px_30px_rgba(196,151,67,.45)] transition-all hover:scale-105 active:scale-95"
+        className="focus-ring relative grid h-13 w-13 place-items-center rounded-full bg-[#947e82] text-[#421319] shadow-[0_8px_30px_rgba(196,151,67,.45)] transition-all hover:scale-105 active:scale-95"
         aria-label="Toggle contact options"
       >
         {open ? (
@@ -365,45 +447,45 @@ export function ChatWidget() {
   return (
     <div className="fixed bottom-[82px] right-4 z-40 md:bottom-20 md:right-6">
       {open && (
-        <div className="mb-3 w-[min(340px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-[#e1cda9] bg-[#fffaf1] shadow-[0_18px_50px_rgba(60,29,42,.18)]">
-          <div className="bg-[#4a1e2c] p-4 text-[#fbf3e6]">
+        <div className="mb-3 w-[min(340px,calc(100vw-32px))] overflow-hidden rounded-2xl border border-[#947e82] bg-[#f5f2e9] shadow-[0_18px_50px_rgba(60,29,42,.18)]">
+          <div className="bg-[#421319] p-4 text-[#f5f2e9]">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CircleUserRound size={22} className="text-[#d9ad51]" />
+                <CircleUserRound size={22} className="text-[#947e82]" />
                 <div>
                   <strong className="block text-sm">Capital Hills desk</strong>
-                  <span className="text-[11px] text-[#dfc9be]">Usually replies in 5 minutes</span>
+                  <span className="text-[11px] text-[#f5f2e9]/50">Usually replies in 5 minutes</span>
                 </div>
               </div>
-              <button onClick={() => setOpen(false)} className="text-[#dfc9be]" aria-label="Close chat" data-testid="button-close-chat">
+              <button onClick={() => setOpen(false)} className="text-[#f5f2e9]/60 hover:text-[#f5f2e9] transition" aria-label="Close chat" data-testid="button-close-chat">
                 <X size={17} />
               </button>
             </div>
           </div>
           <div className="space-y-3 p-4">
-            <div className="rounded-xl rounded-tl-sm bg-[#f0e4d2] p-3 text-xs leading-5 text-[#4a1e2c]">
+            <div className="rounded-xl rounded-tl-sm bg-[#f5f2e9] p-3 text-xs leading-5 text-[#421319]">
               Hello. I can help you find a project, understand a payment plan, or arrange a visit.
             </div>
-            {sent && <div className="ml-6 rounded-xl rounded-tr-sm bg-[#4a1e2c] p-3 text-xs leading-5 text-[#fff7e9]">{sent}</div>}
+            {sent && <div className="ml-6 rounded-xl rounded-tr-sm bg-[#421319] p-3 text-xs leading-5 text-[#f5f2e9]">{sent}</div>}
             <div className="space-y-2">
               {prompts.map((prompt) => (
                 <button
                   key={prompt}
                   onClick={() => setSent(`"${prompt}" — thanks. A representative will follow up shortly.`)}
-                  className="block w-full rounded-lg border border-[#decbaa] px-3 py-2 text-left text-xs font-semibold text-[#4a1e2c] transition hover:border-[#9b702c] hover:bg-[#f8eddd]"
+                  className="block w-full rounded-lg border border-[#947e82] px-3 py-2 text-left text-xs font-semibold text-[#421319] transition hover:border-[#947e82] hover:bg-[#f5f2e9]"
                   data-testid={`chat-prompt-${prompt.slice(0, 4).replace(' ', '-')}`}
                 >
                   {prompt}
                 </button>
               ))}
             </div>
-            <Link href="/contact" className="block pt-1 text-center text-xs font-bold text-[#9b702c]" data-testid="link-chat-contact">
+            <Link href="/contact" className="block pt-1 text-center text-xs font-bold text-[#947e82]" data-testid="link-chat-contact">
               Prefer to talk to someone? →
             </Link>
           </div>
         </div>
       )}
-      <button onClick={() => setOpen(!open)} className="focus-ring flex items-center gap-2 rounded-full bg-[#c49743] px-4 py-3 text-xs font-bold text-[#3c1d2a] shadow-lg transition hover:bg-[#d9ad51]" data-testid="button-open-chat">
+      <button onClick={() => setOpen(!open)} className="focus-ring flex items-center gap-2 rounded-full bg-[#947e82] px-4 py-3 text-xs font-bold text-[#421319] shadow-lg transition hover:bg-[#947e82]" data-testid="button-open-chat">
         <MessageCircle size={17} /> {open ? 'Close desk' : 'Chat with us'}
       </button>
     </div>
@@ -421,41 +503,41 @@ export function BookVisitModal({ isOpen, onClose, projectName }: { isOpen: boole
   };
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-[#3c1d2a]/90 p-5 overflow-y-auto" role="dialog" aria-modal="true">
-      <div className="relative w-full max-w-lg rounded-2xl bg-[#eadbc4] p-7 md:p-9 shadow-2xl my-8">
-        <button onClick={onClose} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-lg bg-[#fff8ea] text-[#4a1e2c] transition-colors hover:bg-[#4a1e2c] hover:text-[#fff8ea]" aria-label="Close modal">
+    <div className="fixed inset-0 z-50 grid place-items-center bg-[#421319]/90 p-5 overflow-y-auto" role="dialog" aria-modal="true">
+      <div className="relative w-full max-w-lg rounded-2xl bg-[#947e82] p-7 md:p-9 shadow-2xl my-8">
+        <button onClick={onClose} className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-lg bg-[#f5f2e9] text-[#421319] transition-colors hover:bg-[#421319] hover:text-[#f5f2e9]" aria-label="Close modal">
           <X size={18} />
         </button>
         <div className="flex items-center gap-2.5 mb-2">
           <img src="/capital-hills-icon-maroon.png" alt="" className="h-7 w-auto object-contain" />
-          <span className="font-mono text-[9px] uppercase tracking-[.25em] text-[#9b702c]">Capital Hills</span>
+          <span className="font-mono text-[9px] uppercase tracking-[.25em] text-[#947e82]">Capital Hills</span>
         </div>
-        <h2 className="font-display text-3xl text-[#4a1e2c]">Book a private visit</h2>
-        <p className="mt-2 text-sm leading-6 text-[#735e57]">See {projectName} in your own time.</p>
+        <h2 className="font-display text-3xl text-[#421319]">Book a private visit</h2>
+        <p className="mt-2 text-sm leading-6 text-[#493337]">See {projectName} in your own time.</p>
         {visitSent ? (
-          <div className="mt-8 rounded-xl bg-[#f5ead9] p-7" data-testid="status-visit-success">
-            <Check className="text-[#9b702c]" size={26} />
-            <h3 className="mt-4 font-display text-2xl text-[#4a1e2c]">Your visit request is with us.</h3>
-            <p className="mt-2 text-sm leading-6 text-[#735e57]">A Capital Hills representative will call shortly to confirm the details.</p>
-            <button onClick={onClose} className="mt-6 w-full rounded-lg bg-[#4a1e2c] py-3 text-sm font-bold text-[#fff8ea]">Close</button>
+          <div className="mt-8 rounded-xl bg-[#f5f2e9] p-7" data-testid="status-visit-success">
+            <Check className="text-[#947e82]" size={26} />
+            <h3 className="mt-4 font-display text-2xl text-[#421319]">Your visit request is with us.</h3>
+            <p className="mt-2 text-sm leading-6 text-[#493337]">A Capital Hills representative will call shortly to confirm the details.</p>
+            <button onClick={onClose} className="mt-6 w-full rounded-lg bg-[#421319] py-3 text-sm font-bold text-[#f5f2e9]">Close</button>
           </div>
         ) : (
           <form onSubmit={submit} className="mt-8 space-y-4">
             <label className="block">
-              <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Your name</span>
-              <input required name="name" autoComplete="name" className="w-full rounded-lg border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="e.g. Mariam Hassan" data-testid="input-visit-name" />
+              <span className="mb-2 block text-xs font-bold text-[#421319]">Your name</span>
+              <input required name="name" autoComplete="name" className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#947e82]" placeholder="e.g. Mariam Hassan" data-testid="input-visit-name" />
             </label>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Phone number</span>
-                <input required type="tel" name="phone" autoComplete="tel" className="w-full rounded-lg border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" placeholder="+20..." data-testid="input-visit-phone" />
+                <span className="mb-2 block text-xs font-bold text-[#421319]">Phone number</span>
+                <input required type="tel" name="phone" autoComplete="tel" className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#947e82]" placeholder="+20..." data-testid="input-visit-phone" />
               </label>
               <label className="block">
-                <span className="mb-2 block text-xs font-bold text-[#4a1e2c]">Preferred date</span>
-                <input required type="date" name="date" min={new Date().toISOString().slice(0, 10)} className="w-full rounded-lg border border-[#ddc8a8] bg-[#fffaf1] px-4 py-3 text-sm outline-none focus:border-[#9b702c]" data-testid="input-visit-date" />
+                <span className="mb-2 block text-xs font-bold text-[#421319]">Preferred date</span>
+                <input required type="date" name="date" min={new Date().toISOString().slice(0, 10)} className="w-full rounded-lg border border-[#947e82] bg-[#f5f2e9] px-4 py-3 text-sm outline-none focus:border-[#947e82]" data-testid="input-visit-date" />
               </label>
             </div>
-            <button type="submit" className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#4a1e2c] px-5 py-3 text-sm font-bold text-[#fff8ea]" data-testid="button-submit-visit">
+            <button type="submit" className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#421319] px-5 py-3 text-sm font-bold text-[#f5f2e9]" data-testid="button-submit-visit">
               <CalendarDays size={15} /> Request a visit
             </button>
           </form>
@@ -476,14 +558,12 @@ export function downloadBrochure(project: Project) {
     '',
     project.description,
     '',
-    `Starting from ${formatPrice(project.startingPrice)}`,
-    `Location: ${project.mapLocation}`,
-    `Available: ${project.availability}`,
+    `Space: ${project.projectSpace || 'N/A'}`,
+    `Location: ${project.location}`,
+    `Product: ${project.product}`,
     '',
-    'Payment plan',
-    ...project.paymentPlan.map((item) => `${item.label}: ${item.value}`),
-    '',
-    `Offer: ${project.offer}`,
+    'Details',
+    `Delivery: ${project.delivery || 'N/A'}`,
     '',
     `Contact: ${CONTACT.phone}`,
   ];
