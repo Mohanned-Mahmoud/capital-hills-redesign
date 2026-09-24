@@ -273,6 +273,107 @@ export default function Home() {
             </FadeIn>
           </div>
         </section>
+      {/* ── CHAIRMAN'S MESSAGE ── */}
+        <section className="relative bg-[#231f20] overflow-hidden">
+
+          {/* ── Decorative geometry layer ── */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0">
+            {/* Massive faint ring top-right */}
+            <div className="absolute -top-[200px] -right-[200px] w-[700px] h-[700px] rounded-full border border-[#947e82]/10" />
+            <div className="absolute -top-[100px] -right-[100px] w-[500px] h-[500px] rounded-full border border-[#947e82]/8" />
+            {/* Accent line bottom-left */}
+            <div className="absolute bottom-0 left-0 w-[2px] h-[60%] bg-gradient-to-t from-[#947e82]/40 to-transparent" />
+            {/* Horizontal rule mid */}
+            <div className="absolute top-[48%] left-0 right-0 h-[1px] bg-[#947e82]/[0.07]" />
+          </div>
+
+          <div className="container-shell relative z-10 py-24 md:py-36">
+            {/* ── Top eyebrow ── */}
+            <FadeIn>
+              <div className="flex items-center gap-6 mb-16">
+                <div className="w-10 h-[2px] bg-[#947e82]" />
+                <p className="font-mono text-[10px] uppercase tracking-[.28em] text-[#947e82]">Chairman's Message</p>
+              </div>
+            </FadeIn>
+
+            <div className="grid md:grid-cols-12 gap-12 md:gap-0 items-start">
+
+              {/* ── LEFT: Photo column ── */}
+              <FadeIn delay={0.1} className="md:col-span-5 md:sticky md:top-28 self-start">
+                <div className="relative">
+                  {/* Accent border frame — offset behind photo */}
+                  <div className="absolute -bottom-4 -right-4 w-full h-full border border-[#947e82]/30 rounded-xl" />
+                  {/* Photo */}
+                  <div className="relative overflow-hidden rounded-xl aspect-[3/4]">
+                    <img
+                      src="/chairman.png"
+                      alt="Eng. Mohamed Salah Abdel Qader — Chairman"
+                      className="absolute inset-0 h-full w-full object-cover object-top"
+                    />
+                    {/* Subtle brand tint at bottom */}
+                    <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#421319]/60 to-transparent" />
+                    {/* Name badge pinned bottom */}
+                    <div className="absolute bottom-0 inset-x-0 p-6">
+                      <p className="font-display text-2xl text-[#f5f2e9] leading-tight">Eng. Mohamed Salah<br />Abdel Qader</p>
+                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">Chairman — Capital Hills Developments</p>
+                    </div>
+                  </div>
+                </div>
+              </FadeIn>
+
+              {/* ── RIGHT: Quote + body ── */}
+              <div className="md:col-span-7 md:pl-16 flex flex-col gap-10">
+                {/* Pull-quote — the most visually impactful element */}
+                <FadeIn delay={0.2}>
+                  <div className="relative">
+                    <span aria-hidden="true" className="absolute -top-6 -left-2 font-display text-[120px] leading-none text-[#947e82]/20 select-none">"</span>
+                    <p className="relative font-display text-3xl md:text-4xl leading-[1.2] text-[#f5f2e9] tracking-tight pt-4">
+                      Trust is more than a promise.<br />
+                      <span className="italic text-[#947e82]">It is the foundation of everything we build.</span>
+                    </p>
+                  </div>
+                </FadeIn>
+
+                {/* Divider */}
+                <FadeIn delay={0.25}>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-[2px] bg-[#947e82]" />
+                    <div className="flex-1 h-[1px] bg-[#947e82]/20" />
+                  </div>
+                </FadeIn>
+
+                {/* Body paragraphs */}
+                <FadeIn delay={0.3}>
+                  <div className="space-y-5 text-[15px] leading-8 text-[#f5f2e9]/65 font-sans">
+                    <p>At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.</p>
+                    <p>For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs — combining thoughtful planning, quality, and strategic locations with a long-term perspective.</p>
+                    <p>We recognize that every project represents an important decision for our customers — whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.</p>
+                    <p>As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.</p>
+                  </div>
+                </FadeIn>
+
+                {/* Stats strip */}
+                <FadeIn delay={0.35}>
+                  <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#947e82]/20">
+                    {[
+                      { num: '10+', label: 'Years of trust' },
+                      { num: '11', label: 'Landmark projects' },
+                      { num: '100B+', label: 'EGP investments' },
+                    ].map(({ num, label }) => (
+                      <div key={label}>
+                        <p className="font-display text-3xl text-[#947e82]">{num}</p>
+                        <p className="mt-1 font-mono text-[9px] uppercase tracking-widest text-[#f5f2e9]/40">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </FadeIn>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        
       </main>
 
       <AnimatePresence>
