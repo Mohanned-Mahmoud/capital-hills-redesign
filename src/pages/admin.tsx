@@ -88,19 +88,16 @@ export default function Admin() {
       const newUrls = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const res = await fetch(`${API_URL}/upload-url`, {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const res = await fetch(`${API_URL}/upload`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename: file.name, contentType: file.type })
+          body: formData
         });
-        const { uploadUrl, publicUrl } = await res.json();
-
-        await fetch(uploadUrl, {
-          method: 'PUT',
-          headers: { 'Content-Type': file.type },
-          body: file,
-        });
-
+        
+        if (!res.ok) throw new Error('Upload failed');
+        const { publicUrl } = await res.json();
         newUrls.push(publicUrl);
       }
 

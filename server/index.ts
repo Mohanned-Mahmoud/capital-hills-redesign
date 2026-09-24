@@ -33,6 +33,7 @@ const PUBLIC_URL = process.env.CLOUDFLARE_R2_PUBLIC_URL!;
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.post('/api/upload', upload.single('file'), async (req, res) => {
+  console.log('Hitting /api/upload', req.file ? 'File present' : 'No file');
   try {
     const file = req.file;
     if (!file) return res.status(400).json({ error: 'No file uploaded' });
