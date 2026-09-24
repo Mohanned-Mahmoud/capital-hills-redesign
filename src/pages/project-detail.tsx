@@ -47,7 +47,7 @@ export default function ProjectDetail() {
           <div className="text-center">
             <p className="eyebrow">Project not found</p>
             <h1 className="mt-3 font-display text-4xl text-[#421319]">That home has moved on.</h1>
-            <Link href="/#projects" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#421319] px-5 py-3 text-sm font-bold text-[#f5f2e9]" data-testid="link-not-found-projects">
+            <Link href="/projects" className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#421319] px-5 py-3 text-sm font-bold text-[#f5f2e9]" data-testid="link-not-found-projects">
               See all projects <ArrowRight size={15} />
             </Link>
           </div>
@@ -89,7 +89,7 @@ export default function ProjectDetail() {
       <main className="pt-20 md:pt-24">
         {/* ── Breadcrumb ── */}
         <div className="container-shell py-5">
-          <Link href="/#projects" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]" data-testid="link-back-projects">
+          <Link href="/projects" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]" data-testid="link-back-projects">
             <ArrowLeft size={12} /> All projects
           </Link>
         </div>
@@ -177,27 +177,27 @@ export default function ProjectDetail() {
               <p className="eyebrow">Project Details</p>
               <div className="mt-6 space-y-4">
                 {project.projectSpace && (
-                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
-                    <span className="text-sm text-[#421319]/70">Space</span>
-                    <strong className="font-display text-xl text-[#421319]">{project.projectSpace}</strong>
+                  <div className="flex flex-col gap-1 md:flex-row md:items-end md:justify-between border-b border-[#947e82] pb-4 md:gap-4">
+                    <span className="text-sm text-[#421319]/70 shrink-0">Space</span>
+                    <strong className="font-display text-xl text-[#421319] text-left md:text-right">{project.projectSpace}</strong>
                   </div>
                 )}
                 {project.construction && (
-                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
-                    <span className="text-sm text-[#421319]/70">Construction</span>
-                    <strong className="font-display text-xl text-[#421319]">{project.construction}</strong>
+                  <div className="flex flex-col gap-1 md:flex-row md:items-end md:justify-between border-b border-[#947e82] pb-4 md:gap-4">
+                    <span className="text-sm text-[#421319]/70 shrink-0">Construction</span>
+                    <strong className="font-display text-xl text-[#421319] text-left md:text-right">{project.construction}</strong>
                   </div>
                 )}
                 {project.product && (
-                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
-                    <span className="text-sm text-[#421319]/70">Product</span>
-                    <strong className="font-display text-xl text-[#421319]">{project.product.split('(')[0]}</strong>
+                  <div className="flex flex-col gap-1 md:flex-row md:items-end md:justify-between border-b border-[#947e82] pb-4 md:gap-4">
+                    <span className="text-sm text-[#421319]/70 shrink-0">Product</span>
+                    <strong className="font-display text-xl text-[#421319] text-left md:text-right">{project.product.split('(')[0]}</strong>
                   </div>
                 )}
                 {project.finishing && (
-                  <div className="flex items-end justify-between border-b border-[#947e82] pb-4">
-                    <span className="text-sm text-[#421319]/70">Finishing</span>
-                    <strong className="font-display text-xl text-[#421319]">{project.finishing.split(',')[0]}</strong>
+                  <div className="flex flex-col gap-1 md:flex-row md:items-end md:justify-between border-b border-[#947e82] pb-4 md:gap-4">
+                    <span className="text-sm text-[#421319]/70 shrink-0">Finishing</span>
+                    <strong className="font-display text-xl text-[#421319] text-left md:text-right">{project.finishing.split(',')[0]}</strong>
                   </div>
                 )}
               </div>

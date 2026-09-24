@@ -246,7 +246,7 @@ export default function WhyUs() {
               Browse our latest projects.
             </h2>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Link href="/#projects" className="inline-flex items-center gap-2 rounded-full bg-[#421319] px-7 py-3.5 text-sm font-bold text-[#f5f2e9] transition hover:bg-[#250f12]">
+              <Link href="/projects" className="inline-flex items-center gap-2 rounded-full bg-[#421319] px-7 py-3.5 text-sm font-bold text-[#f5f2e9] transition hover:bg-[#250f12]">
                 View projects <ArrowRight size={16} />
               </Link>
               <Link href="/contact" className="inline-flex items-center gap-2 rounded-full border border-[#421319]/30 px-7 py-3.5 text-sm font-bold text-[#421319] transition hover:bg-[#421319]/10">

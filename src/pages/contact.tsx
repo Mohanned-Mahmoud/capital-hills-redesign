@@ -162,7 +162,7 @@ export default function Contact() {
                   <p className="flex items-center gap-4 text-sm text-[#421319]">
                     <MapPin size={14} className="text-[#947e82] shrink-0" /> <span className="whitespace-pre-line font-medium leading-relaxed">{CONTACT.address}</span>
                   </p>
-                  <Link href="/#projects" className="text-xs font-bold text-[#947e82]" data-testid="link-contact-projects">
+                  <Link href="/projects" className="text-xs font-bold text-[#947e82]" data-testid="link-contact-projects">
                     Browse projects →
                   </Link>
                 </div>

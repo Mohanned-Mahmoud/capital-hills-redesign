@@ -235,7 +235,7 @@ export function Footer() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">Explore</p>
           <div className="space-y-3 text-sm text-[#947e82]">
-            <Link href="/#projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">Our projects</Link>
+            <Link href="/projects" className="block transition-colors hover:text-white" data-testid="link-footer-projects">Our projects</Link>
             <Link href="/why-us" className="block transition-colors hover:text-white" data-testid="link-footer-why">Why Capital Hills</Link>
             <Link href="/contact" className="block transition-colors hover:text-white" data-testid="link-footer-contact">Contact us</Link>
           </div>

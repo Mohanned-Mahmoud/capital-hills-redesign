@@ -50,7 +50,7 @@ export default function Projects() {
           </div>
 
           {filtered.length > 0 ? (
-            <StaggerContainer className="mt-12 grid gap-6 md:grid-cols-3">
+            <StaggerContainer key={cityFilter} className="mt-12 grid gap-6 md:grid-cols-3">
               {filtered.map((project, index) => (
                 <StaggerItem
                   key={project.slug}
