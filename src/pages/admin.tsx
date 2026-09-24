@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { Shell } from '@/components/site';
 import { FadeIn } from '@/components/animations';
 
 const API_URL = 'http://localhost:3001/api';
@@ -201,9 +200,8 @@ export default function Admin() {
   );
 
   return (
-    <Shell>
-      <main className="min-h-screen bg-[#f5f2e9] pt-28 pb-20 px-6">
-        <div className="mx-auto max-w-6xl">
+    <main className="min-h-screen bg-[#f5f2e9] pt-12 pb-20 px-6">
+      <div className="mx-auto max-w-6xl">
           <FadeIn>
             <h1 className="font-display text-4xl text-[#421319] mb-8">Admin Dashboard</h1>
             
@@ -394,6 +392,5 @@ export default function Admin() {
           </FadeIn>
         </div>
       </main>
-    </Shell>
   );
 }
