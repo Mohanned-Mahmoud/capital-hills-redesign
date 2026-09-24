@@ -4,6 +4,7 @@ import { Link, useParams } from 'wouter';
 import { getProject, projects } from '@/data/projects';
 import { CONTACT, ProjectCard, Shell, downloadBrochure, BookVisitModal, PhoneNumber } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
+import { useData } from '@/context/DataContext';
 
 export default function ProjectDetail() {
   const { projects } = useData();

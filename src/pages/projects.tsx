@@ -4,6 +4,7 @@ import { Link } from 'wouter';
 import { projects } from '@/data/projects';
 import { ProjectCard, Shell } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
+import { useData } from '@/context/DataContext';
 
 export default function Projects() {
   const { projects: allProjects } = useData();
