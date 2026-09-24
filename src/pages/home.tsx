@@ -99,7 +99,7 @@ export default function Home() {
           <div className="container-shell">
             <StaggerContainer className="grid grid-cols-2 gap-8 md:grid-cols-4">
               {[
-                { value: 18, suffix: '', label: 'Key projects delivered' },
+                { value: parseInt(content['stat_1_val']) || 18, suffix: content['stat_1_suf'] || '', label: content['stat_1_lbl'] || 'Key projects delivered' },
                 { value: 4, suffix: '', label: 'Prime Egyptian cities' },
                 { value: 2017, suffix: '', label: 'Year established' },
                 { value: 15, suffix: ' yrs', label: 'Max instalment plan' },

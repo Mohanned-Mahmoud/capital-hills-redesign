@@ -5,6 +5,7 @@ import { CONTACT, Shell, PhoneNumber } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 
 export default function Contact() {
+  const { content } = useData();
   const [sent, setSent] = useState(false);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
