@@ -12,11 +12,11 @@ export default function Projects() {
   const [cityFilter, setCityFilter] = useState('all');
 
   const filtered = useMemo(
-    () => projects.filter((p) => cityFilter === 'all' || p.city === cityFilter),
+    () => allProjects.filter((p) => cityFilter === 'all' || p.city === cityFilter),
     [cityFilter]
   );
 
-  const cities = ['all', ...Array.from(new Set(projects.map((p) => p.city)))];
+  const cities = ['all', ...Array.from(new Set(allProjects.map((p) => p.city)))];
 
   useEffect(() => {
     window.scrollTo(0, 0);

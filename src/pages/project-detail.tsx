@@ -10,11 +10,15 @@ export default function ProjectDetail() {
   const { projects } = useData();
 
   const { slug } = useParams<{ slug: string }>();
-  const project = getProject(slug);
+  const project = projects.find(p => p.slug === slug) || getProject(slug);
+
+  if (!project) {
+    return <Shell><div className="pt-32 pb-32 text-center font-display text-2xl text-[#421319]">Project not found</div></Shell>;
+  }
   const [saved, setSaved] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [shareMessage, setShareMessage] = useState('');
-  const [compare, setCompare] = useState(projects.find((item) => item.slug !== slug)?.slug || projects[0].slug);
+  const [compare, setCompare] = useState(() => projects.find((item) => item.slug !== slug)?.slug || projects[0]?.slug || '');
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [qrFailed, setQrFailed] = useState(false);
   const [bookModalOpen, setBookModalOpen] = useState(false);
@@ -59,7 +63,7 @@ export default function ProjectDetail() {
     );
   }
 
-  const comparison = getProject(compare) || projects.find((item) => item.slug !== project.slug) || projects[0];
+  const comparison = getProject(compare) || projects.find((item) => item.slug !== project.slug) || projects[0] || project;
   const whatsappUrl = `https://wa.me/201005550190?text=${encodeURIComponent(`Hello Capital Hills, I am interested in ${project.name}.`)}`;
 
   const saveProject = () => {
