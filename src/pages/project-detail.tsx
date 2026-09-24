@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight, Download, Heart, MapPin, MessageCircle, Share2, X } from 'lucide-react';
 import { Link, useParams } from 'wouter';
 import { getProject, projects } from '@/data/projects';
-import { CONTACT, ProjectCard, Shell, downloadBrochure, BookVisitModal, PhoneNumber } from '@/components/site';
+import { useContactInfo, ProjectCard, Shell, downloadBrochure, BookVisitModal, PhoneNumber } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 import { useData } from '@/context/DataContext';
 
 export default function ProjectDetail() {
+  const contactInfo = useContactInfo();
   const { projects } = useData();
 
   const { slug } = useParams<{ slug: string }>();

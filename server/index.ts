@@ -5,8 +5,8 @@ import path from 'path';
 import multer from 'multer';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { db } from './db';
-import { contentBlocks, projects } from './db/schema';
-import { eq } from 'drizzle-orm';
+import { contentBlocks, projects, directMessages } from './db/schema';
+import { eq, desc } from 'drizzle-orm';
 
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
@@ -93,7 +93,8 @@ app.get('/api/projects', async (req, res) => {
 
 app.post('/api/projects', async (req, res) => {
   try {
-    const newProject = await db.insert(projects).values(req.body).returning();
+    const { id, createdAt, updatedAt, ...projectData } = req.body;
+    const newProject = await db.insert(projects).values(projectData).returning();
     res.json(newProject[0]);
   } catch (error) {
     console.error(error);
@@ -103,9 +104,14 @@ app.post('/api/projects', async (req, res) => {
 
 app.put('/api/projects/:id', async (req, res) => {
   try {
-    const updated = await db.update(projects).set({ ...req.body, updatedAt: new Date() }).where(eq(projects.id, parseInt(req.params.id))).returning();
+    const { id, createdAt, updatedAt, ...updateData } = req.body;
+    const updated = await db.update(projects)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(projects.id, parseInt(req.params.id)))
+      .returning();
     res.json(updated[0]);
   } catch (error) {
+    console.error('Update Project Error:', error);
     res.status(500).json({ error: 'Failed to update project' });
   }
 });
@@ -116,6 +122,34 @@ app.delete('/api/projects/:id', async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete project' });
+  }
+});
+
+app.get('/api/messages', async (req, res) => {
+  try {
+    const allMessages = await db.select().from(directMessages).orderBy(desc(directMessages.createdAt));
+    res.json(allMessages);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch messages' });
+  }
+});
+
+app.post('/api/messages', async (req, res) => {
+  try {
+    const { name, phone, email, message } = req.body;
+    await db.insert(directMessages).values({ name, phone, email, message });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save message' });
+  }
+});
+
+app.patch('/api/messages/read', async (req, res) => {
+  try {
+    await db.update(directMessages).set({ isRead: true });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to mark as read' });
   }
 });
 

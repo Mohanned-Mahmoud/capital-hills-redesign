@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { Shell } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
+import { useData } from '@/context/DataContext';
 
 const coreValues = [
   { title: 'CUSTOMER FOCUS', copy: 'Placing our clients interests at the center of every decision and action.' },
@@ -12,7 +13,7 @@ const coreValues = [
 ];
 
 export default function WhyUs() {
-  const { projects } = useData();
+  const { content, projects } = useData();
 
   return (
     <Shell>
@@ -21,7 +22,7 @@ export default function WhyUs() {
         <section className="relative flex flex-col justify-end overflow-hidden bg-[#250f12] px-8 py-20 pt-36 text-[#f5f2e9] md:px-16 md:pt-32 min-h-[90vh]">
           <div className="absolute inset-0 z-0">
             <img
-              src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000"
+              src={content['whyus_hero_bg'] || "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000"}
               alt="WHAT DEFINES US"
               className="h-full w-full object-cover opacity-30 mix-blend-luminosity"
             />
@@ -34,13 +35,13 @@ export default function WhyUs() {
           </div>
           <FadeIn className="relative z-10 max-w-3xl">
             <h1 className="font-display text-5xl leading-[1.02] tracking-[-0.02em] md:text-[clamp(3rem,5vw,4.5rem)] text-[#f5f2e9]">
-              WHAT DEFINES US
+              {content['whyus_hero_title'] || 'WHAT DEFINES US'}
             </h1>
             <p className="mt-7 text-base leading-7 text-[#f5f2e9]/80 font-sans">
-              Since 2017, we have been shaping Cairo's landscape by connecting East and West through developments that merge modern architecture with practical functionality and a clear understanding of our clients' aspirations. Every project we deliver is guided by a commitment to long-term value, serving as an investment for our clients while enriching the wider community.
+              {content['whyus_hero_desc_1'] || "Since 2017, we have been shaping Cairo's landscape by connecting East and West through developments that merge modern architecture with practical functionality and a clear understanding of our clients' aspirations. Every project we deliver is guided by a commitment to long-term value, serving as an investment for our clients while enriching the wider community."}
             </p>
             <p className="mt-5 text-base leading-7 text-[#f5f2e9]/80 font-sans">
-              From dynamic commercial hubs that drive business growth to lifestyle-focused residential spaces that elevate everyday living, our portfolio reflects a vision of progress, innovation, and sustainability. At Capital Hills Developments, we don't just build for today — we build for generations to come.
+              {content['whyus_hero_desc_2'] || "From dynamic commercial hubs that drive business growth to lifestyle-focused residential spaces that elevate everyday living, our portfolio reflects a vision of progress, innovation, and sustainability. At Capital Hills Developments, we don't just build for today — we build for generations to come."}
             </p>
           </FadeIn>
         </section>
@@ -53,9 +54,9 @@ export default function WhyUs() {
           </div>
           <div className="container-shell relative z-10">
             <FadeIn>
-              <h2 className="font-display text-3xl md:text-4xl text-[#f5f2e9] mb-12 border-b border-[#f5f2e9]/20 pb-4">CORE VALUES</h2>
+              <h2 className="font-display text-3xl md:text-4xl text-[#f5f2e9] mb-12 border-b border-[#f5f2e9]/20 pb-4">{content['whyus_core_title'] || 'CORE VALUES'}</h2>
               <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-                {coreValues.map((v, i) => (
+                {(content['whyus_core_list'] ? JSON.parse(content['whyus_core_list']) : coreValues).map((v: any, i: number) => (
                   <StaggerItem key={v.title}>
                     <h3 className="font-sans font-bold text-lg text-[#947e82] mb-3">{v.title}</h3>
                     <p className="text-sm leading-6 text-[#f5f2e9]/80">{v.copy}</p>
@@ -71,20 +72,20 @@ export default function WhyUs() {
           <div className="container-shell">
             <FadeIn className="text-center mb-24">
               <h2 className="text-4xl md:text-5xl text-[#421319]">
-                <span className="block font-sans font-medium">Every Story</span>
-                <span className="block font-display italic text-[#947e82] text-3xl mt-2 mb-2">has</span>
-                <span className="block font-mono">A Start.</span>
+                <span className="block font-sans font-medium">{content['whyus_story_title_1'] || 'Every Story'}</span>
+                <span className="block font-display italic text-[#947e82] text-3xl mt-2 mb-2">{content['whyus_story_title_2'] || 'has'}</span>
+                <span className="block font-mono">{content['whyus_story_title_3'] || 'A Start.'}</span>
               </h2>
             </FadeIn>
 
             <FadeIn>
-              <h2 className="font-sans text-5xl md:text-7xl font-light tracking-tighter text-[#421319] opacity-20 mb-8 uppercase">THIS IS OURS</h2>
+              <h2 className="font-sans text-5xl md:text-7xl font-light tracking-tighter text-[#421319] opacity-20 mb-8 uppercase">{content['whyus_story_eyebrow'] || 'THIS IS OURS'}</h2>
               <div className="max-w-4xl border-l-2 border-[#947e82] pl-8">
                 <p className="font-sans font-bold text-lg md:text-xl text-[#421319] mb-8">WITH TOTAL INVESTMENTS EXCEEDING EGP 100 BILLION</p>
                 <div className="space-y-6 text-[#493337] text-base md:text-lg leading-relaxed">
-                  <p>Long before Capital Hills was established, the foundations were already in place.</p>
-                  <p>Since 2017, the company delivered standalone buildings across Hadayek October and 6th of October, focused on solid construction and reliable execution.</p>
-                  <p>In 2020, this experience evolved into Capital Hills Developments, marking the shift from individual projects to large-scale, mixed-use destinations. Today, Capital Hills continues to build integrated developments that support modern living, business growth, and long-term value.</p>
+                  <p>{content['whyus_story_p1'] || 'Long before Capital Hills was established, the foundations were already in place.'}</p>
+                  <p>{content['whyus_story_p2'] || 'Since 2017, the company delivered standalone buildings across Hadayek October and 6th of October, focused on solid construction and reliable execution.'}</p>
+                  <p>{content['whyus_story_p3'] || 'In 2020, this experience evolved into Capital Hills Developments, marking the shift from individual projects to large-scale, mixed-use destinations. Today, Capital Hills continues to build integrated developments that support modern living, business growth, and long-term value.'}</p>
                 </div>
               </div>
             </FadeIn>
@@ -96,9 +97,9 @@ export default function WhyUs() {
           {/* Mission */}
           <div className="bg-[#421319] p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
             <FadeIn className="relative z-10">
-              <h2 className="font-display text-4xl text-[#947e82] mb-6">The Path We Build</h2>
+              <h2 className="font-display text-4xl text-[#947e82] mb-6">{content['whyus_mission_title'] || 'The Path We Build'}</h2>
               <p className="text-lg leading-relaxed text-[#f5f2e9]">
-                We build integrated communities and deliver real, measurable returns on every investment on time, every time, with a personal relationship behind every deal.
+                {content['whyus_mission_desc'] || 'We build integrated communities and deliver real, measurable returns on every investment on time, every time, with a personal relationship behind every deal.'}
               </p>
               <p className="mt-12 font-mono text-xs uppercase tracking-widest text-[#f5f2e9]/50 text-center">Invest With Trust / Grow With Community</p>
             </FadeIn>
@@ -106,9 +107,9 @@ export default function WhyUs() {
           {/* Vision */}
           <div className="bg-[#f5f2e9] p-12 md:p-24 flex flex-col justify-center relative overflow-hidden">
             <FadeIn className="relative z-10">
-              <h2 className="font-display text-4xl text-[#421319] mb-6">The World We See</h2>
+              <h2 className="font-display text-4xl text-[#421319] mb-6">{content['whyus_vision_title'] || 'The World We See'}</h2>
               <p className="text-lg leading-relaxed text-[#493337]">
-                To be a trusted real estate partner, creating communities and investment opportunities that deliver lasting value.
+                {content['whyus_vision_desc'] || 'To be a trusted real estate partner, creating communities and investment opportunities that deliver lasting value.'}
               </p>
               <p className="mt-12 font-mono text-xs uppercase tracking-widest text-[#493337]/50 text-center">Invest With Trust / Grow With Community</p>
             </FadeIn>
@@ -120,21 +121,17 @@ export default function WhyUs() {
           <div className="container-shell">
             <FadeIn>
               <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                <div className="bg-[#f5f2e9] p-8 rounded-xl shadow-xl transform md:-translate-y-8">
-                  <h3 className="font-display text-3xl text-[#421319] mb-2">LIVING</h3>
-                  <p className="font-mono text-xs text-[#947e82] mb-4 uppercase tracking-widest">Residential Developments</p>
-                  <p className="text-[#493337]">Lifestyle driven communities thoughtfully designed to blend comfort, beauty and convenience.</p>
-                </div>
-                <div className="bg-[#f5f2e9] p-8 rounded-xl shadow-xl transform md:translate-y-8">
-                  <h3 className="font-display text-3xl text-[#421319] mb-2">WORKING</h3>
-                  <p className="font-mono text-xs text-[#947e82] mb-4 uppercase tracking-widest">Commercial Developments</p>
-                  <p className="text-[#493337]">Strategic business destinations offering prime visibility, seamless accessibility and long-term value.</p>
-                </div>
-                <div className="bg-[#f5f2e9] p-8 rounded-xl shadow-xl md:col-span-2 md:w-2/3 md:mx-auto transform md:translate-y-4">
-                  <h3 className="font-display text-3xl text-[#421319] mb-2">TOGETHER</h3>
-                  <p className="font-mono text-xs text-[#947e82] mb-4 uppercase tracking-widest">Mixed-Use Projects</p>
-                  <p className="text-[#493337]">Integrated destinations that combine retail, offices, medical facilities and leisure spaces to create dynamic hubs of modern living and working.</p>
-                </div>
+                {(content['whyus_categories_list'] ? JSON.parse(content['whyus_categories_list']) : [
+                  { title: 'LIVING', subtitle: 'Residential Developments', desc: 'Lifestyle driven communities thoughtfully designed to blend comfort, beauty and convenience.' },
+                  { title: 'WORKING', subtitle: 'Commercial Developments', desc: 'Strategic business destinations offering prime visibility, seamless accessibility and long-term value.' },
+                  { title: 'TOGETHER', subtitle: 'Mixed-Use Projects', desc: 'Integrated destinations that combine retail, offices, medical facilities and leisure spaces to create dynamic hubs of modern living and working.' }
+                ]).map((cat: any, i: number) => (
+                  <div key={i} className={`bg-[#f5f2e9] p-8 rounded-xl shadow-xl transform ${i === 0 ? 'md:-translate-y-8' : i === 1 ? 'md:translate-y-8' : 'md:col-span-2 md:w-2/3 md:mx-auto md:translate-y-4'}`}>
+                    <h3 className="font-display text-3xl text-[#421319] mb-2">{cat.title}</h3>
+                    <p className="font-mono text-xs text-[#947e82] mb-4 uppercase tracking-widest">{cat.subtitle}</p>
+                    <p className="text-[#493337]">{cat.desc}</p>
+                  </div>
+                ))}
               </div>
             </FadeIn>
           </div>
@@ -143,9 +140,9 @@ export default function WhyUs() {
         {/* ── CTA ── */}
         <section className="bg-[#947e82] py-24">
           <FadeIn className="container-shell text-center max-w-2xl mx-auto">
-            <p className="eyebrow text-[#421319]">Ready to see what we've built?</p>
+            <p className="eyebrow text-[#421319]">{content['whyus_cta_eyebrow'] || "Ready to see what we've built?"}</p>
             <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
-              Browse our latest projects.
+              {content['whyus_cta_title'] || "Browse our latest projects."}
             </h2>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
               <Link href="/projects" className="inline-flex items-center gap-2 rounded-full bg-[#421319] px-7 py-3.5 text-sm font-bold text-[#f5f2e9] transition hover:bg-[#250f12]">

@@ -1,10 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { FadeIn } from '@/components/animations';
+import { PartnersEditor } from '@/components/PartnersEditor';
+import { GenericListEditor } from '@/components/GenericListEditor';
+import { SingleImageEditor } from '@/components/SingleImageEditor';
 
 const API_URL = 'http://localhost:3001/api';
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState<'home' | 'whyus' | 'contact' | 'global' | 'projects' | 'media'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'whyus' | 'contact' | 'global' | 'projects' | 'messages'>('home');
+  useEffect(() => {
+    if (activeTab === 'messages' && unreadCount > 0) {
+      fetch(`${API_URL}/messages/read`, { method: 'PATCH' }).then(() => {
+        setMessages(messages.map(m => ({...m, isRead: true})));
+      });
+    }
+  }, [activeTab]);
   
   const [contentBlocks, setContentBlocks] = useState<any[]>([]);
   const [projects, setProjects] = useState<any[]>([]);
@@ -19,6 +29,8 @@ export default function Admin() {
   const [editingProject, setEditingProject] = useState<any | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState('');
+  const [messages, setMessages] = useState<any[]>([]);
+  const unreadCount = messages.filter((m: any) => !m.isRead).length;
 
   useEffect(() => {
     fetchData();
@@ -26,12 +38,14 @@ export default function Admin() {
 
   const fetchData = async () => {
     try {
-      const [contentRes, projectsRes] = await Promise.all([
+      const [contentRes, projectsRes, msgsRes] = await Promise.all([
         fetch(`${API_URL}/content`),
-        fetch(`${API_URL}/projects`)
+        fetch(`${API_URL}/projects`),
+        fetch(`${API_URL}/messages`)
       ]);
       setContentBlocks(await contentRes.json());
       setProjects(await projectsRes.json());
+      if (msgsRes.ok) setMessages(await msgsRes.json());
     } catch (e) {
       console.error(e);
     } finally {
@@ -126,11 +140,16 @@ export default function Admin() {
       const method = editingProject.id ? 'PUT' : 'POST';
       const url = editingProject.id ? `${API_URL}/projects/${editingProject.id}` : `${API_URL}/projects`;
       
-      await fetch(url, {
+      const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editingProject)
       });
+      
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to save');
+      }
       
       alert('Project saved!');
       setEditingProject(null);
@@ -151,12 +170,111 @@ export default function Admin() {
   };
 
   // Group content blocks by page
-  const homeBlocks = contentBlocks.filter(b => b.id.startsWith('home_') || b.id.startsWith('stat_') || b.id.startsWith('partners_') || b.id === 'hero_title' || b.id === 'hero_subtitle' || b.id === 'chairman_quote');
+  const homeBlocks = contentBlocks.filter(b => b.id.startsWith('home_') || b.id.startsWith('stat_') || b.id.startsWith('chairman_') || b.id.startsWith('hero_title') || b.id === 'hero_subtitle');
   const whyUsBlocks = contentBlocks.filter(b => b.id.startsWith('whyus_'));
   const contactBlocks = contentBlocks.filter(b => b.id.startsWith('contact_'));
   const globalBlocks = contentBlocks.filter(b => b.id.startsWith('global_') || b.id.startsWith('site_') || b.id.startsWith('footer_') || b.id.startsWith('header_'));
 
-  const renderContentTab = (blocks: any[], title: string, desc: string, prefix: string) => (
+  const KNOWN_KEYS: Record<string, { id: string, label: string }[]> = {
+    home: [
+      { id: 'hero_title', label: 'Hero Title 1' },
+      { id: 'hero_title_2', label: 'Hero Title 2 (Italic)' },
+      { id: 'hero_title_3', label: 'Hero Title 3 (Mono)' },
+      { id: 'hero_subtitle', label: 'Hero Subtitle' },
+      { id: 'home_hero_bg', label: 'Hero Background Image' },
+      { id: 'home_cta_bg', label: 'CTA Section Background Image' },
+      { id: 'home_chairman_img', label: 'Chairman Photo Image' },
+      { id: 'stat_1_val', label: 'Stat 1 Value' },
+      { id: 'stat_1_suf', label: 'Stat 1 Suffix' },
+      { id: 'stat_1_lbl', label: 'Stat 1 Label' },
+      { id: 'stat_2_val', label: 'Stat 2 Value' },
+      { id: 'stat_2_suf', label: 'Stat 2 Suffix' },
+      { id: 'stat_2_lbl', label: 'Stat 2 Label' },
+      { id: 'stat_3_val', label: 'Stat 3 Value' },
+      { id: 'stat_3_suf', label: 'Stat 3 Suffix' },
+      { id: 'stat_3_lbl', label: 'Stat 3 Label' },
+      { id: 'stat_4_val', label: 'Stat 4 Value' },
+      { id: 'stat_4_suf', label: 'Stat 4 Suffix' },
+      { id: 'stat_4_lbl', label: 'Stat 4 Label' },
+      { id: 'home_why_eyebrow', label: 'Why Us Eyebrow' },
+      { id: 'home_why_title_1', label: 'Why Us Title Line 1' },
+      { id: 'home_why_title_2', label: 'Why Us Title Line 2 (Italic)' },
+      { id: 'home_why_desc', label: 'Why Us Description' },
+      { id: 'home_cta_title', label: 'CTA Title' },
+      { id: 'home_cta_desc', label: 'CTA Description' },
+      { id: 'chairman_quote', label: 'Chairman Quote' },
+      { id: 'chairman_name_1', label: 'Chairman Name Line 1' },
+      { id: 'chairman_name_2', label: 'Chairman Name Line 2' },
+      { id: 'chairman_title', label: 'Chairman Title' },
+      { id: 'chairman_p1', label: 'Chairman Paragraph 1' },
+      { id: 'chairman_p2', label: 'Chairman Paragraph 2' },
+      { id: 'chairman_p3', label: 'Chairman Paragraph 3' },
+      { id: 'chairman_p4', label: 'Chairman Paragraph 4' },
+            { id: 'home_why_list', label: 'Why Us List' },
+      { id: 'home_reviews_list', label: 'Reviews List' },
+      { id: 'chairman_stats_list', label: 'Chairman Stats List' },
+      { id: 'home_ticker_list', label: 'Ticker List' },
+      { id: 'home_partners_list', label: 'Home Partners List' }
+    ],
+    whyus: [
+      { id: 'whyus_hero_title', label: 'Hero Title' },
+      { id: 'whyus_hero_desc_1', label: 'Hero Description Paragraph 1' },
+      { id: 'whyus_hero_desc_2', label: 'Hero Description Paragraph 2' },
+      { id: 'whyus_core_title', label: 'Core Values Title' },
+      { id: 'whyus_story_eyebrow', label: 'Story Eyebrow' },
+      { id: 'whyus_story_title_1', label: 'Story Title Line 1' },
+      { id: 'whyus_story_title_2', label: 'Story Title Line 2' },
+      { id: 'whyus_story_title_3', label: 'Story Title Line 3' },
+      { id: 'whyus_story_p1', label: 'Story Paragraph 1' },
+      { id: 'whyus_story_p2', label: 'Story Paragraph 2' },
+      { id: 'whyus_story_p3', label: 'Story Paragraph 3' },
+      { id: 'whyus_mission_title', label: 'Mission Title' },
+      { id: 'whyus_mission_desc', label: 'Mission Description' },
+      { id: 'whyus_vision_title', label: 'Vision Title' },
+      { id: 'whyus_vision_desc', label: 'Vision Description' },
+      { id: 'whyus_hero_bg', label: 'Hero Background Image' },
+      { id: 'whyus_cta_eyebrow', label: 'CTA Eyebrow' },
+      { id: 'whyus_cta_title', label: 'CTA Title' },
+      { id: 'whyus_core_list', label: 'Core Values List' },
+      { id: 'whyus_categories_list', label: 'Categories List' }
+    ],
+    contact: [
+      { id: 'contact_eyebrow', label: 'Hero Eyebrow' },
+      { id: 'contact_title_1', label: 'Hero Title 1' },
+      { id: 'contact_title_2', label: 'Hero Title 2 (Italic)' },
+      { id: 'contact_desc', label: 'Hero Description' },
+      { id: 'contact_phone', label: 'Phone Number' },
+      { id: 'contact_email', label: 'Email' },
+      { id: 'contact_address', label: 'Address' },
+      { id: 'contact_form_eyebrow', label: 'Form Eyebrow' },
+      { id: 'contact_form_title', label: 'Form Title' },
+      { id: 'contact_form_desc', label: 'Form Description' },
+      { id: 'contact_map_url', label: 'Google Maps Embed URL' }
+    ],
+    global: [
+      { id: 'global_footer_desc', label: 'Footer Description' },
+      { id: 'global_footer_phone', label: 'Footer Phone' },
+      { id: 'global_footer_email', label: 'Footer Email' },
+      { id: 'global_logo_full_light', label: 'Main Logo (Light version - for dark backgrounds)' },
+      { id: 'global_logo_full_maroon', label: 'Main Logo (Maroon version - for light backgrounds)' },
+      { id: 'global_logo_icon_light', label: 'Icon Logo (Light version)' },
+      { id: 'global_logo_icon_maroon', label: 'Icon Logo (Maroon version)' }
+    ]
+  };
+
+  const renderContentTab = (blocks: any[], title: string, desc: string, prefix: string, tabKey: string) => {
+    // Combine known keys with dynamic blocks from DB to ensure nothing is missing
+    const knownForTab = KNOWN_KEYS[tabKey] || [];
+    const allBlocks = [...knownForTab];
+    
+    // Add any dynamically created blocks that aren't in KNOWN_KEYS
+    blocks.forEach(b => {
+      if (!allBlocks.find(kb => kb.id === b.id)) {
+        allBlocks.push({ id: b.id, label: b.id });
+      }
+    });
+
+    return (
     <div className="space-y-8">
       <h2 className="text-2xl font-display text-[#421319] mb-4">{title}</h2>
       <p className="text-sm text-[#493337] mb-8">{desc}</p>
@@ -197,19 +315,76 @@ export default function Admin() {
       </div>
 
       <div className="grid gap-6">
-        {blocks.map((block) => {
+        {allBlocks.map((blockDef) => {
+          // Find value in DB blocks
+          const dbBlock = blocks.find(b => b.id === blockDef.id);
+          const value = dbBlock ? dbBlock.value : '';
+
+          if (blockDef.id.startsWith('global_logo_') || blockDef.id.endsWith('_bg') || blockDef.id.endsWith('_img')) {
+            return <SingleImageEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
+          }
+
+          if (blockDef.id === 'home_partners_list') {
+            return <PartnersEditor key={blockDef.id} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} />;
+          }
+
+          if (blockDef.id === 'home_why_list') {
+            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+              { name: 'n', label: 'Number (e.g. 01)', type: 'text' },
+              { name: 'title', label: 'Title', type: 'text' },
+              { name: 'copy', label: 'Description', type: 'textarea' },
+            ]} />;
+          }
+
+          if (blockDef.id === 'whyus_core_list') {
+            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+              { name: 'title', label: 'Title', type: 'text' },
+              { name: 'copy', label: 'Description', type: 'textarea' },
+            ]} />;
+          }
+
+          if (blockDef.id === 'whyus_categories_list') {
+            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+              { name: 'title', label: 'Category Name', type: 'text' },
+              { name: 'subtitle', label: 'Subtitle', type: 'text' },
+              { name: 'desc', label: 'Description', type: 'textarea' },
+            ]} />;
+          }
+
+          if (blockDef.id === 'home_reviews_list') {
+            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+              { name: 'quote', label: 'Quote', type: 'textarea' },
+              { name: 'name', label: 'Name', type: 'text' },
+              { name: 'detail', label: 'Detail (e.g. Investor)', type: 'text' },
+            ]} />;
+          }
+
+          if (blockDef.id === 'chairman_stats_list') {
+            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+              { name: 'num', label: 'Number Value (e.g. 10+)', type: 'text' },
+              { name: 'label', label: 'Label', type: 'text' },
+            ]} />;
+          }
+
+          if (blockDef.id === 'home_ticker_list') {
+            return <GenericListEditor key={blockDef.id} blockId={blockDef.id} title={blockDef.label} value={value} onSave={(val) => handleSaveContent(blockDef.id, val)} fields={[
+              { name: 'text', label: 'Ticker Text', type: 'text' },
+            ]} />;
+          }
+
           return (
-            <div key={block.id} className="bg-white p-6 rounded-xl shadow-sm border border-[#947e82]/10 relative">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-3">{block.id}</label>
+            <div key={blockDef.id} className="bg-white p-6 rounded-xl shadow-sm border border-[#947e82]/10 relative">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-1">{blockDef.label}</label>
+              <span className="block text-[10px] font-mono text-[#947e82]/60 mb-3">{blockDef.id}</span>
               <textarea 
                 className="w-full bg-[#f5f2e9] border border-[#947e82]/30 rounded-lg p-4 min-h-[60px] outline-none focus:border-[#421319]"
-                defaultValue={block.value}
-                id={`content_${block.id}`}
+                defaultValue={value}
+                id={`content_${blockDef.id}`}
               />
               <button 
                 onClick={() => {
-                  const val = (document.getElementById(`content_${block.id}`) as HTMLTextAreaElement).value;
-                  handleSaveContent(block.id, val);
+                  const val = (document.getElementById(`content_${blockDef.id}`) as HTMLTextAreaElement).value;
+                  handleSaveContent(blockDef.id, val);
                 }}
                 className="mt-4 bg-[#421319] text-[#f5f2e9] px-6 py-2 rounded-lg text-sm font-bold hover:bg-[#250f12] transition"
               >
@@ -220,7 +395,7 @@ export default function Admin() {
         })}
       </div>
     </div>
-  );
+  )};
 
   return (
     <main className="min-h-screen bg-[#f5f2e9] pt-12 pb-20 px-6">
@@ -234,17 +409,24 @@ export default function Admin() {
               <button onClick={() => setActiveTab('contact')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'contact' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Contact Page</button>
               <button onClick={() => setActiveTab('global')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'global' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Global (Footer/Header)</button>
               <button onClick={() => { setActiveTab('projects'); setEditingProject(null); }} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'projects' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Projects</button>
-              <button onClick={() => setActiveTab('media')} className={`text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'media' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>Media Upload</button>
+              <button onClick={() => setActiveTab('messages')} className={`relative flex items-center text-sm font-bold uppercase tracking-wider px-4 py-2 rounded-lg transition whitespace-nowrap ${activeTab === 'messages' ? 'bg-[#421319] text-[#f5f2e9]' : 'text-[#421319] hover:bg-[#421319]/10'}`}>
+                  Direct Messages
+                  {unreadCount > 0 && (
+                    <span className="ml-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
             </div>
 
             {loading ? (
               <p>Loading data...</p>
             ) : (
               <div>
-                {activeTab === 'home' && renderContentTab(homeBlocks, 'Home Page Content', 'Edit the hero, stats, and text on the Home page.', 'home_')}
-                {activeTab === 'whyus' && renderContentTab(whyUsBlocks, 'Why Us Page Content', 'Edit the pillars and text on the Why Us page.', 'whyus_')}
-                {activeTab === 'contact' && renderContentTab(contactBlocks, 'Contact Page Content', 'Edit the contact information and titles.', 'contact_')}
-                {activeTab === 'global' && renderContentTab(globalBlocks, 'Global Content', 'Edit footer text, header text, and overall site elements.', 'global_')}
+                {activeTab === 'home' && renderContentTab(homeBlocks, 'Home Page Content', 'Edit the hero, stats, and text on the Home page.', 'home_', 'home')}
+                {activeTab === 'whyus' && renderContentTab(whyUsBlocks, 'Why Us Page Content', 'Edit the pillars and text on the Why Us page.', 'whyus_', 'whyus')}
+                {activeTab === 'contact' && renderContentTab(contactBlocks, 'Contact Page Content', 'Edit the contact information and titles.', 'contact_', 'contact')}
+                {activeTab === 'global' && renderContentTab(globalBlocks, 'Global Content', 'Edit footer text, header text, and overall site elements.', 'global_', 'global')}
 
                 {activeTab === 'projects' && (
                   <div>
@@ -284,7 +466,7 @@ export default function Admin() {
                         <form onSubmit={handleSaveProject} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                             <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Project Name *</label>
-                            <input required type="text" value={editingProject.name} onChange={e => setEditingProject({...editingProject, name: e.target.value})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
+                            <input required type="text" value={editingProject.name} onChange={e => setEditingProject({...editingProject, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')})} className="w-full bg-[#f5f2e9] rounded p-3 outline-none focus:ring-2" />
                           </div>
                           <div>
                             <label className="block text-xs font-bold uppercase tracking-wider text-[#947e82] mb-2">Slug (URL friendly) *</label>
@@ -375,37 +557,35 @@ export default function Admin() {
                   </div>
                 )}
 
-                {activeTab === 'media' && (
-                  <div className="bg-white p-8 rounded-xl shadow-sm border border-[#947e82]/10 text-center">
-                    <h2 className="text-2xl font-display text-[#421319] mb-4">Upload to Cloudflare R2</h2>
-                    <p className="text-[#947e82] mb-8">Select an image to upload it directly to your R2 bucket. You can then copy the URL to use in your Projects or Content.</p>
-                    
-                    <div className="border-2 border-dashed border-[#947e82]/30 rounded-xl p-12 hover:bg-[#947e82]/5 transition relative">
-                      <input 
-                        type="file" 
-                        onChange={handleFileUpload} 
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        accept="image/*"
-                      />
-                      <span className="font-bold text-[#421319]">
-                        {uploadingImage ? 'Uploading to R2...' : 'Click or drag image here'}
-                      </span>
+                {activeTab === 'messages' && (
+                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div>
+                      <h2 className="font-display text-2xl text-[#421319]">Direct Messages</h2>
+                      <p className="text-sm text-[#493337] mt-1">Inquiries received from the contact form.</p>
                     </div>
-
-                    {uploadedUrl && (
-                      <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg text-left">
-                        <p className="text-green-800 font-bold mb-2 text-lg">Upload Successful!</p>
-                        <p className="text-sm text-green-700 break-all mb-4">URL: <a href={uploadedUrl} target="_blank" rel="noreferrer" className="underline">{uploadedUrl}</a></p>
-                        <img src={uploadedUrl} alt="Uploaded" className="max-h-40 rounded-lg shadow-sm mb-4" />
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(uploadedUrl);
-                            alert('Copied to clipboard!');
-                          }}
-                          className="bg-green-700 text-white px-4 py-2 rounded text-sm font-bold hover:bg-green-800 transition"
-                        >
-                          Copy URL
-                        </button>
+                    
+                    {messages.length === 0 ? (
+                      <div className="rounded-2xl border border-[#421319]/10 bg-white p-8 text-center text-[#493337]">
+                        No messages yet.
+                      </div>
+                    ) : (
+                      <div className="grid gap-4">
+                        {messages.map((msg, i) => (
+                          <div key={i} className={`rounded-2xl border border-[#421319]/10 p-6 shadow-sm flex flex-col gap-3 ${!msg.isRead ? 'bg-red-50/50' : 'bg-white'}`}>
+                            <div className="flex justify-between items-start border-b border-[#421319]/10 pb-3">
+                              <div>
+                                <h3 className="font-bold text-lg text-[#421319]">{msg.name}</h3>
+                                <p className="text-sm text-[#947e82]">{msg.phone} {msg.email && <span className="mx-2">•</span>} {msg.email}</p>
+                              </div>
+                              <span className="text-xs text-[#947e82] bg-[#f5f2e9] px-2 py-1 rounded">
+                                {new Date(msg.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <p className="text-sm text-[#493337] whitespace-pre-line leading-relaxed">
+                              {msg.message}
+                            </p>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

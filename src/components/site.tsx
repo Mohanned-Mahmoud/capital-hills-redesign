@@ -9,23 +9,33 @@ import { type Project } from '@/data/projects';
 import { FadeIn } from '@/components/animations';
 import { useData } from '@/context/DataContext';
 
-export const CONTACT = {
-  phone: '16794',
-  tel: 'tel:16794',
-  whatsapp: 'https://wa.me/201005550190?text=Hello%20Capital%20Hills%2C%20I%27d%20like%20to%20ask%20about%20a%20project.',
-  email: 'mailto:hello@capitalhillsdevelopments.eg?subject=Capital%20Hills%20enquiry',
-  sms: 'sms:16794',
-  address: 'HQ: Galleria 40, Zayed | Downtown, New Cairo\nSales & Customer Service: Arkan Plaza, Zayed',
-};
+export function useContactInfo() {
+  const { content } = useData();
+  const phone = content['contact_phone'] || '16794';
+  return {
+    phone,
+    tel: `tel:${phone}`,
+    whatsapp: content['contact_whatsapp'] || 'https://wa.me/201005550190?text=Hello%20Capital%20Hills',
+    email: content['contact_email'] ? `mailto:${content['contact_email']}` : 'mailto:hello@capitalhillsdevelopments.eg',
+    sms: `sms:${phone}`,
+    address: content['contact_address'] || 'HQ: Galleria 40, Zayed | Downtown, New Cairo\nSales & Customer Service: Arkan Plaza, Zayed',
+    facebook: content['global_facebook_url'] || '#',
+    instagram: content['global_instagram_url'] || '#'
+  };
+}
 
 export function PhoneNumber() {
-  return (
-    <span className="whitespace-nowrap inline-flex items-baseline font-display tracking-tight">
-      <span>16</span>
-      <span className="text-[1.3em] font-medium leading-[0] mx-[1px] -translate-y-[2px]">7</span>
-      <span>94</span>
-    </span>
-  );
+  const { phone } = useContactInfo();
+  if (phone === '16794') {
+    return (
+      <span className="whitespace-nowrap inline-flex items-baseline font-display tracking-tight">
+        <span>16</span>
+        <span className="text-[1.3em] font-medium leading-[0] mx-[1px] -translate-y-[2px]">7</span>
+        <span>94</span>
+      </span>
+    );
+  }
+  return <span className="whitespace-nowrap inline-flex items-baseline font-display tracking-tight">{phone}</span>;
 }
 
 /**
@@ -76,7 +86,7 @@ function useImageLuminance(src: string, region: 'top' | 'bottom' = 'bottom'): 'd
     };
 
     img.onerror = () => setTone('dark');
-    img.src = src;
+    img.src = src.startsWith('http') ? src + (src.includes('?') ? '&' : '?') + 'c=1' : src;
   }, [src, region]);
 
   return tone;
@@ -91,12 +101,13 @@ export function Logo({
   variant?: 'full' | 'icon';
   className?: string;
 }) {
+  const { content } = useData();
   const fullSrc = light
-    ? '/capital-hills-logo-full-light.png'
-    : '/capital-hills-logo-full-maroon.png';
+    ? content['global_logo_full_light'] || '/capital-hills-logo-full-light.png'
+    : content['global_logo_full_maroon'] || '/capital-hills-logo-full-maroon.png';
   const iconSrc = light
-    ? '/capital-hills-icon-light.png'
-    : '/capital-hills-icon-maroon.png';
+    ? content['global_logo_icon_light'] || '/capital-hills-icon-light.png'
+    : content['global_logo_icon_maroon'] || '/capital-hills-icon-maroon.png';
 
   const src = variant === 'icon' ? iconSrc : fullSrc;
   const defaultClass =
@@ -117,6 +128,7 @@ export function Logo({
 
 export function Header() {
   const { content } = useData();
+  const contact = useContactInfo();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
@@ -164,7 +176,7 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <a
-            href={CONTACT.tel}
+            href={contact.tel}
             className={`focus-ring hidden items-center gap-2 rounded-full px-4 py-2 text-xs font-bold transition md:flex ${
               scrolled || lightPage
                 ? 'bg-[#947e82] text-[#421319] hover:bg-[#947e82]'
@@ -204,7 +216,7 @@ export function Header() {
             </Link>
           ))}
           <a
-            href={CONTACT.tel}
+            href={contact.tel}
             className="flex items-center gap-2 px-5 py-4 text-sm font-bold text-[#947e82]"
             data-testid="link-mobile-call"
           >
@@ -217,20 +229,22 @@ export function Header() {
 }
 
 export function Footer() {
+  const contact = useContactInfo();
   const { content } = useData();
+  const footerText = content['global_footer_text'] || "Building communities that inspire. From prime commercial spaces to elegant residential developments, we deliver quality, trust, and lasting value.";
   return (
     <footer className="bg-[#421319] pb-24 pt-16 text-[#f5f2e9] md:pb-12">
       <div className="container-shell grid gap-12 md:grid-cols-[1.4fr_.8fr_.8fr_1.2fr]">
         <div>
           <Logo light variant="full" className="h-10 md:h-12 w-auto object-contain" />
           <p className="mt-5 max-w-xs text-sm leading-6 text-[#947e82]">
-            {content['global_footer_desc'] || 'Homes with sound thinking behind them. For the way Egyptians actually live.'}
+            {footerText}
           </p>
           <div className="mt-6 flex gap-3">
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#250f12] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-instagram">
+            <a href={contact.instagram} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#250f12] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-instagram">
               <Instagram size={16} />
             </a>
-            <a href="https://facebook.com" target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#250f12] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-facebook">
+            <a href={contact.facebook} target="_blank" rel="noreferrer" className="grid h-10 w-10 place-items-center rounded-full bg-[#250f12] text-white transition-colors hover:bg-[#493337]" data-testid="link-footer-facebook">
               <Facebook size={16} />
             </a>
           </div>
@@ -246,14 +260,13 @@ export function Footer() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_visit'] || 'Visit'}</p>
           <div className="space-y-4 text-sm leading-5 text-[#947e82]">
-            <div><strong className="font-bold text-[#f5f2e9]">HQ</strong><br />Galleria 40, Zayed<br />Downtown, New Cairo</div>
-            <div><strong className="font-bold text-[#f5f2e9]">Sales & Customer Service</strong><br />Arkan Plaza, Zayed</div>
+            <div className="whitespace-pre-line leading-relaxed">{contact.address}</div>
           </div>
         </div>
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[.2em] text-white mb-5">{content['global_footer_need'] || 'Need a second opinion?'}</p>
           <p className="text-sm leading-6 text-[#947e82]">{content['global_footer_need_desc'] || 'Tell us what you are looking for. A real person will call with a clear answer.'}</p>
-          <a href={CONTACT.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f5f2e9] px-5 py-3 text-sm font-bold text-[#231f20] transition-colors hover:bg-white" data-testid="link-footer-phone">
+          <a href={contact.tel} className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#f5f2e9] px-5 py-3 text-sm font-bold text-[#231f20] transition-colors hover:bg-white" data-testid="link-footer-phone">
             <Phone size={14} /> <PhoneNumber />
           </a>
         </div>
@@ -267,6 +280,7 @@ export function Footer() {
 }
 
 export function ProjectCard({ project, featured = false }: { project: Project; featured?: boolean }) {
+  const contact = useContactInfo();
   const [saved, setSaved] = useState(() => localStorage.getItem('capital-hills-favourites')?.includes(project.slug) ?? false);
 
   // Analyse image brightness — pick text colour that guarantees contrast
@@ -351,8 +365,8 @@ export function ProjectCard({ project, featured = false }: { project: Project; f
       <div className="flex items-center justify-between border-t border-[#947e82]/50 bg-[#f5f2e9] px-4 py-3 md:px-5 md:py-4">
         <span className="font-mono text-[9px] md:text-[11px] font-bold uppercase tracking-[.2em] text-[#947e82] truncate max-w-[140px] md:max-w-[200px]">{project.product.split('(')[0]}</span>
         <div className="flex gap-2">
-          <a href={CONTACT.tel} aria-label="Call" className="grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><Phone size={14} className="w-3 md:w-3.5" /></a>
-          <a href={CONTACT.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><MessageCircle size={14} className="w-3 md:w-3.5" /></a>
+          <a href={contact.tel} aria-label="Call" className="grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><Phone size={14} className="w-3 md:w-3.5" /></a>
+          <a href={contact.whatsapp} target="_blank" rel="noreferrer" aria-label="WhatsApp" className="grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-[#947e82] text-[#250f12] transition hover:bg-[#421319] hover:text-[#947e82]"><MessageCircle size={14} className="w-3 md:w-3.5" /></a>
         </div>
       </div>
     </article>
@@ -371,13 +385,14 @@ export function Shell({ children }: { children: React.ReactNode }) {
 }
 
 export function FloatingActions() {
+  const contact = useContactInfo();
   const [open, setOpen] = useState(false);
   const [activeIconIndex, setActiveIconIndex] = useState(0);
   const [notice, setNotice] = useState('');
   const actions = [
-    { label: 'Call', icon: Phone, href: CONTACT.tel },
-    { label: 'WhatsApp', icon: MessageCircle, href: CONTACT.whatsapp },
-    { label: 'Email', icon: Mail, href: CONTACT.email },
+    { label: 'Call', icon: Phone, href: contact.tel },
+    { label: 'WhatsApp', icon: MessageCircle, href: contact.whatsapp },
+    { label: 'Email', icon: Mail, href: contact.email },
     { label: 'Direct Message', icon: Send, href: '/contact' },
   ];
   const isHandset = typeof navigator !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
@@ -393,7 +408,7 @@ export function FloatingActions() {
   const activate = (label: string, event: React.MouseEvent<HTMLAnchorElement>) => {
     if ((label === 'Call' || label === 'SMS') && !isHandset) {
       event.preventDefault();
-      setNotice(`${label} is ready on mobile at ${CONTACT.phone}.`);
+      setNotice(`${label} is ready on mobile at ${phone}.`);
       window.setTimeout(() => setNotice(''), 2600);
     }
   };
@@ -568,7 +583,7 @@ export function downloadBrochure(project: Project) {
     'Details',
     `Delivery: ${project.delivery || 'N/A'}`,
     '',
-    `Contact: ${CONTACT.phone}`,
+    `Contact: ${phone}`,
   ];
   const stream = ['BT', '/F1 20 Tf', '72 760 Td', ...lines.flatMap((line, index) => [index === 0 ? `(${pdfEscape(line)}) Tj` : `0 -24 Td (${pdfEscape(line)}) Tj`]), 'ET'].join('\n');
   const objects = ['<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [3 0 R] /Count 1 >>', '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>', '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>', `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`];

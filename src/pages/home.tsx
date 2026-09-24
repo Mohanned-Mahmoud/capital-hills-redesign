@@ -6,7 +6,7 @@ import {
 import { Link } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useData } from '@/context/DataContext';
-import { CONTACT, ProjectCard, Shell, downloadBrochure } from '@/components/site';
+import { useContactInfo, ProjectCard, Shell, downloadBrochure } from '@/components/site';
 import { FadeIn, StaggerContainer, StaggerItem, CountUp } from '@/components/animations';
 
 const reviews = [
@@ -24,16 +24,25 @@ const heroImages = [
 // removed tickerItems from here
 
 export default function Home() {
+  const contactInfo = useContactInfo();
   const { content, projects } = useData();
   const tickerItems = projects.flatMap((p) => [`${p.name} — ${p.city}`, '·']);
   const [review, setReview] = useState(0);
+  const activeReviews = useMemo(() => {
+    try {
+      const parsed = content['home_reviews_list'] ? JSON.parse(content['home_reviews_list']) : [];
+      return parsed.length > 0 ? parsed : reviews;
+    } catch(e) {
+      return reviews;
+    }
+  }, [content['home_reviews_list']]);
   const [autoPlay, setAutoPlay] = useState(true);
   const [selectedPartner, setSelectedPartner] = useState<{src: string, alt: string, desc: string} | null>(null);
 
   // Auto-rotate reviews
   useEffect(() => {
     if (!autoPlay) return;
-    const t = setInterval(() => setReview((r) => (r + 1) % reviews.length), 5000);
+    const t = setInterval(() => setReview((r) => (r + 1) % activeReviews.length), 5000);
     return () => clearInterval(t);
   }, [autoPlay]);
 
@@ -45,7 +54,7 @@ export default function Home() {
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <img
-              src="https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000"
+              src={content['home_hero_bg'] || "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=2000"}
               alt="Capital Hills Building"
               className="h-full w-full object-cover opacity-60 mix-blend-luminosity"
             />
@@ -68,8 +77,8 @@ export default function Home() {
               </p>
               <h1 className="text-[clamp(3.2rem,8vw,7rem)] leading-[0.9] tracking-[-0.03em] text-[#f5f2e9]">
                 <span className="font-sans font-semibold">{content['hero_title'] || 'A clearer path'}</span><br />
-                <span className="font-display italic text-[#947e82]">to </span>
-                <span className="font-mono">your place.</span>
+                <span className="font-display italic text-[#947e82]">{content['hero_title_2'] || 'to '}</span>
+                <span className="font-mono">{content['hero_title_3'] || 'your place.'}</span>
               </h1>
               <p className="mt-8 max-w-md text-base leading-7 text-[#f5f2e9]/70 font-sans">
                 {content['hero_subtitle'] || 'Thoughtfully planned communities. A better tomorrow.'}
@@ -100,9 +109,9 @@ export default function Home() {
             <StaggerContainer className="grid grid-cols-2 gap-8 md:grid-cols-4">
               {[
                 { value: parseInt(content['stat_1_val']) || 18, suffix: content['stat_1_suf'] || '', label: content['stat_1_lbl'] || 'Key projects delivered' },
-                { value: 4, suffix: '', label: 'Prime Egyptian cities' },
-                { value: 2017, suffix: '', label: 'Year established' },
-                { value: 15, suffix: ' yrs', label: 'Max instalment plan' },
+                { value: parseInt(content['stat_2_val'] as any) || 4, suffix: content['stat_2_suf'] || '', label: content['stat_2_lbl'] || 'Prime Egyptian cities' },
+                { value: parseInt(content['stat_3_val'] as any) || 2017, suffix: content['stat_3_suf'] || '', label: content['stat_3_lbl'] || 'Year established' },
+                { value: parseInt(content['stat_4_val'] as any) || 15, suffix: content['stat_4_suf'] || ' yrs', label: content['stat_4_lbl'] || 'Max instalment plan' },
               ].map(({ value, suffix, label }) => (
                 <StaggerItem key={label} className="border-l border-[#f5f2e9]/15 pl-6 first:border-0 first:pl-0 md:first:border-l md:first:pl-6">
                   <CountUp target={value} suffix={suffix} className="font-display text-4xl text-[#f5f2e9] md:text-5xl" />
@@ -118,12 +127,12 @@ export default function Home() {
           <div className="container-shell mb-12">
             <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-center">
               <FadeIn>
-                <p className="eyebrow">Why Capital Hills</p>
+                <p className="eyebrow">{content['home_why_eyebrow'] || 'Why Capital Hills'}</p>
                 <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
-                  Invest With<br /><span className="italic">Trust.</span>
+                  {content['home_why_title_1'] || 'Invest With'}<br /><span className="italic">{content['home_why_title_2'] || 'Trust.'}</span>
                 </h2>
                 <p className="mt-5 max-w-sm text-sm leading-7 text-[#493337]">
-                  We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.
+                  {content['home_why_desc'] || 'We believe real estate is more than a property. It is a decision about your future, your family, your business, and your investment.'}
                 </p>
                 <Link href="/why-us" className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-[#421319]" data-testid="link-home-why-us">
                   Learn more about us <ArrowRight size={15} />
@@ -131,14 +140,19 @@ export default function Home() {
               </FadeIn>
               {/* Values as horizontal numbered list */}
               <StaggerContainer className="space-y-0 divide-y divide-[#947e82]">
-                {[
-                  { n: '01', title: 'Trusted Relationships', copy: 'Creating spaces where people can live, work, grow, and connect.' },
-                  { n: '02', title: '18 Key Projects', copy: 'Serving residential, commercial & mixed-use across Egypt.' },
-                  { n: '03', title: 'Established Partners', copy: 'Working with brands across industries to deliver lasting value.' },
-                  { n: '04', title: 'People at the Heart', copy: 'A collaborative team committed to making a meaningful impact.' },
-                ].map(({ n, title, copy }) => (
-                  <StaggerItem key={n} className="flex items-start gap-5 py-5">
-                    <span className="shrink-0 font-mono text-[10px] tracking-[.2em] text-[#421319]/50 pt-1">{n}</span>
+                {(() => {
+                  let items = [];
+                  try { items = content['home_why_list'] ? JSON.parse(content['home_why_list']) : []; } catch(e){}
+                  if (items.length === 0) items = [
+                    { n: '01', title: 'Trusted Relationships', copy: 'Creating spaces where people can live, work, grow, and connect.' },
+                    { n: '02', title: '18 Key Projects', copy: 'Serving residential, commercial & mixed-use across Egypt.' },
+                    { n: '03', title: 'Established Partners', copy: 'Working with brands across industries to deliver lasting value.' },
+                    { n: '04', title: 'People at the Heart', copy: 'A collaborative team committed to making a meaningful impact.' }
+                  ];
+                  return items;
+                })().map(({ n, title, copy }, index) => (
+                  <StaggerItem key={n || index} className="flex items-start gap-5 py-5">
+                    <span className="shrink-0 font-mono text-[10px] tracking-[.2em] text-[#421319]/50 pt-1">{n || String(index + 1).padStart(2, '0')}</span>
                     <div>
                       <h3 className="font-display text-xl text-[#421319]">{title}</h3>
                       <p className="mt-1 text-sm leading-6 text-[#421319]/70">{copy}</p>
@@ -169,15 +183,15 @@ export default function Home() {
               <blockquote
                 className="font-display text-2xl leading-snug text-[#421319] md:text-3xl -mt-8"
               >
-                {reviews[review].quote}
+                {activeReviews[review]?.quote}
               </blockquote>
               <div className="mt-8">
-                <p className="text-sm font-bold text-[#421319]">{reviews[review].name}</p>
-                <p className="mt-1 font-mono text-[9px] uppercase tracking-[.18em] text-[#947e82]">{reviews[review].detail}</p>
+                <p className="text-sm font-bold text-[#421319]">{activeReviews[review]?.name}</p>
+                <p className="mt-1 font-mono text-[9px] uppercase tracking-[.18em] text-[#947e82]">{activeReviews[review]?.detail}</p>
               </div>
               {/* Dots */}
               <div className="mt-8 flex items-center justify-center gap-2">
-                {reviews.map((_, i) => (
+                {activeReviews.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => { setReview(i); setAutoPlay(false); }}
@@ -208,24 +222,7 @@ export default function Home() {
             {/* Logo wall */}
             <FadeIn delay={0.15}>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 md:grid-cols-6 lg:grid-cols-8">
-                {[
-                  { src: '/logos/amazon.png', alt: 'Amazon Hills', desc: "The meeting point of two ambitious visions: Capital Hills' local insight and Amazon Developments' global excellence. Through this collaboration, we deliver high-rise mixed-use destinations defined by precision, smart engineering, and modern architecture — setting new benchmarks for real estate in Egypt's New Administrative Capital and beyond." },
-                  { src: '/logos/e_and_egypt.png', alt: 'Etisalat and (e&)', desc: 'A leading regional provider of communications and digital services, partnering with us to redefine the concept of gated communities in Egypt. Through this collaboration, we integrate advanced infrastructure, smart services, and cutting-edge technology into our projects, delivering a new benchmark for connected, intelligent living.' },
-                  { src: '/logos/fbc.png', alt: 'Future Builders Company', desc: 'A trusted execution partner bringing engineering excellence, precision, and timely delivery to Capital Hills\' ambitious visions. Together, we integrate the mindset of a developer and contractor into one unified approach, ensuring projects are built to exacting standards while maintaining speed, quality, and client satisfaction.' },
-                  { src: '/logos/arkan.png', alt: 'Arkan Consultants', desc: 'A multidisciplinary consultancy partner providing integrated engineering and architectural solutions. Arkan Consultants bring technical rigor, coordination efficiency, and modern design thinking, ensuring Capital Hills\' projects meet high performance standards while maintaining architectural integrity.' },
-                  { src: '/logos/archplan.png', alt: 'Archplan Consulting', desc: 'A strategic architectural and planning partner contributing design clarity, spatial intelligence, and regulatory expertise to Capital Hills\' developments. Through thoughtful planning and coordinated execution, Archplan supports the delivery of well-structured projects that balance functionality, aesthetics, and long-term value.' },
-                  { src: '/logos/dma.png', alt: 'DMA Design | Engineering', desc: 'A trusted engineering partner delivering precise structural and technical solutions across Capital Hills\' portfolio. DMA\'s expertise ensures stability, efficiency, and compliance at every stage of development, supporting projects that are engineered to perform, endure, and scale.' },
-                  { src: '/logos/iec.png', alt: 'IEC', desc: 'A reliable engineering consultancy offering comprehensive design, supervision, and coordination services. IEC plays a key role in aligning technical execution with Capital Hills\' development vision, ensuring projects are delivered with accuracy, safety, and operational efficiency.' },
-                  { src: '/logos/adc.png', alt: 'ADC', desc: 'A creative architectural partner bringing contemporary design approaches and contextual sensitivity to Capital Hills\' developments. ADC contributes innovative concepts that enhance user experience while maintaining practicality, efficiency, and alignment with the overall project vision.' },
-                  { src: '/logos/hafez.png', alt: 'Hafez Consultants', desc: 'A leading architectural and urban design partner shaping the identity of several Capital Hills projects. With a strong focus on modern architecture, spatial harmony, and lifestyle integration, Hafez Consultants translate development vision into refined, livable environments built to stand the test of time.' },
-                  { src: '/logos/yba.png', alt: 'YBA Architects', desc: 'An architectural partner delivering elegant, functional, and well-coordinated design solutions. YBA Architects support Capital Hills by ensuring architectural consistency, clarity of execution, and thoughtful detailing across residential and mixed-use developments.' },
-                  { src: '/logos/ace.png', alt: 'ACE Bakhoum & Partners', desc: 'ACE is a leading multidisciplinary engineering consultancy providing comprehensive services in planning, design, project management, and construction supervision. With a multidisciplinary team and a global approach, ACE delivers tailored human and technical solutions to meet the unique requirements of every project.' },
-                  { src: '/logos/sag.png', alt: 'SAG Consulting Group', desc: 'SAG Consulting Group is a multidisciplinary engineering consultancy with over 30 years of experience in design, construction supervision, project management, and technical support. With a strong track record across Egypt, Africa, and the Middle East, SAG has successfully delivered landmark and large scale projects across a wide range of sectors.' },
-                  { src: '/logos/regus.png', alt: 'Regus', desc: 'Regus, part of International Workplace Group (IWG), is a globally recognized provider of flexible workspace solutions, offering premium serviced offices, coworking spaces, meeting rooms, and business services. Founded in 1989 in Brussels, Regus has built a strong international presence, delivering professional workplace environments designed to support business growth and productivity.' },
-                  { src: '/logos/raa.png', alt: 'RAYA Smart Buildings', desc: 'RAYA Smart Buildings specializes in developing smart, sustainable, and sophisticated commercial and office spaces, combining innovative design, energy efficiency, and technology to create high-quality business environments.' },
-                  { src: '/logos/electra.png', alt: 'Electra', desc: 'Electra by Raya provides smart and sustainable EV charging solutions, making electric mobility more accessible, convenient, and connected.' },
-                  { src: '/logos/healthy.png', alt: 'Healthy Care Medical Group', desc: 'Established in 2018, Healthy Care Medical Group is a leading Egyptian healthcare provider offering specialized medical services across multiple disciplines. Starting with a specialized polyclinic in Alexandria, the group has expanded its presence and obtained medical operator licenses for several projects in the New Administrative Capital, bringing integrated healthcare expertise to emerging communities.' },
-                ].map((partner) => (
+                {(() => { let partnersList = []; try { partnersList = content['home_partners_list'] ? JSON.parse(content['home_partners_list']) : []; } catch (e) { partnersList = []; } return partnersList; })().map((partner: any) => (
                   <button
                     key={partner.alt}
                     onClick={() => setSelectedPartner(partner)}
@@ -249,7 +246,7 @@ export default function Home() {
           {/* Left: image */}
           <div className="relative min-h-[260px] overflow-hidden">
             <img
-              src="https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg?auto=compress&cs=tinysrgb&w=1000"
+              src={content['home_cta_bg'] || "https://images.pexels.com/photos/2082087/pexels-photo-2082087.jpeg?auto=compress&cs=tinysrgb&w=1000"}
               alt="Capital Hills home"
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -258,12 +255,12 @@ export default function Home() {
           {/* Right: CTA */}
           <div className="flex flex-col justify-center bg-[#947e82] px-8 py-16 md:px-16">
             <FadeIn>
-              <p className="eyebrow">One good conversation</p>
+              <p className="eyebrow">{content['home_cta_eyebrow'] || 'One good conversation'}</p>
               <h2 className="mt-4 font-display text-4xl leading-tight text-[#421319] md:text-5xl">
-                Let's find the place that makes sense for you.
+                {content['home_cta_title'] || "Let's find the place that makes sense for you."}
               </h2>
               <p className="mt-5 max-w-sm text-sm leading-6 text-[#493337]">
-                Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.
+                {content['home_cta_desc'] || 'Tell us your city, your range, and what you need. We will come back with useful options, not a sales pitch.'}
               </p>
               <Link
                 href="/contact"
@@ -308,7 +305,7 @@ export default function Home() {
                   {/* Photo */}
                   <div className="relative overflow-hidden rounded-xl aspect-[3/4]">
                     <img
-                      src="/chairman.png"
+                      src={content['home_chairman_img'] || "/chairman.png"}
                       alt="Eng. Mohamed Salah Abdel Qader — Chairman"
                       className="absolute inset-0 h-full w-full object-cover object-top"
                     />
@@ -316,8 +313,8 @@ export default function Home() {
                     <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#421319]/60 to-transparent" />
                     {/* Name badge pinned bottom */}
                     <div className="absolute bottom-0 inset-x-0 p-6">
-                      <p className="font-display text-2xl text-[#f5f2e9] leading-tight">Eng. Mohamed Salah<br />Abdel Qader</p>
-                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">Chairman — Capital Hills Developments</p>
+                      <p className="font-display text-2xl text-[#f5f2e9] leading-tight">{content['chairman_name_1'] || 'Eng. Mohamed Salah'}<br />{content['chairman_name_2'] || 'Abdel Qader'}</p>
+                      <p className="mt-1 font-mono text-[9px] uppercase tracking-[.2em] text-[#947e82]">{content['chairman_title'] || 'Chairman — Capital Hills Developments'}</p>
                     </div>
                   </div>
                 </div>
@@ -346,21 +343,26 @@ export default function Home() {
                 {/* Body paragraphs */}
                 <FadeIn delay={0.3}>
                   <div className="space-y-5 text-[15px] leading-8 text-[#f5f2e9]/65 font-sans">
-                    <p>At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.</p>
-                    <p>For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs — combining thoughtful planning, quality, and strategic locations with a long-term perspective.</p>
-                    <p>We recognize that every project represents an important decision for our customers — whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.</p>
-                    <p>As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.</p>
+                    <p>{content['chairman_p1'] || 'At Capital Hills Developments, we believe real estate development is about more than building. It is about shaping communities, creating lasting value, and building trust that stands the test of time.'}</p>
+                    <p>{content['chairman_p2'] || "For the past 10 years, we have been building our presence in the real estate sector, guided by a commitment to developing destinations that meet our customers' evolving needs — combining thoughtful planning, quality, and strategic locations with a long-term perspective."}</p>
+                    <p>{content['chairman_p3'] || 'We recognize that every project represents an important decision for our customers — whether they are choosing a home, growing a business, or making an investment. This responsibility guides our approach and reinforces our commitment to delivering value at every stage of the journey.'}</p>
+                    <p>{content['chairman_p4'] || 'As we continue to grow, we remain focused on building strong relationships with our customers, partners, and communities, while fostering an environment where our people can grow, contribute, and succeed.'}</p>
                   </div>
                 </FadeIn>
 
                 {/* Stats strip */}
                 <FadeIn delay={0.35}>
                   <div className="grid grid-cols-3 gap-4 pt-6 border-t border-[#947e82]/20">
-                    {[
-                      { num: '10+', label: 'Years of trust' },
-                      { num: '11', label: 'Landmark projects' },
-                      { num: '100B+', label: 'EGP investments' },
-                    ].map(({ num, label }) => (
+                    {(() => {
+                      let items = [];
+                      try { items = content['chairman_stats_list'] ? JSON.parse(content['chairman_stats_list']) : []; } catch(e){}
+                      if (items.length === 0) items = [
+                        { num: '10+', label: 'Years of trust' },
+                        { num: '11', label: 'Landmark projects' },
+                        { num: '100B+', label: 'EGP investments' }
+                      ];
+                      return items;
+                    })().map(({ num, label }) => (
                       <div key={label}>
                         <p className="font-display text-3xl text-[#947e82]">{num}</p>
                         <p className="mt-1 font-mono text-[9px] uppercase tracking-widest text-[#f5f2e9]/40">{label}</p>
